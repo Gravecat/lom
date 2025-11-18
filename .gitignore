@@ -1,0 +1,27 @@
+# Pretty basic stuff, just blocking temporary files, binary objects, and other
+# junk that may show up in the folder but doesn't belong in the repo.
+
+# Unwanted temporary files.
+~$*
+*.tmp
+
+# Unfortunate artefacts that can arise from using WSL on Windows.
+*:Zone.Identifier
+
+# Binaries created by the build process, or libraries used in the build.
+*.a
+*.dll
+*.exe
+*.o
+
+# Files used for testing.
+*.lnk
+log.txt
+
+# Visual Studio Code settings, which aren't relevant to the repo.
+.vscode/**
+
+# Build folders.
+build/**
+build-*/**
+*-build/**
