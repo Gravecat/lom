@@ -137,6 +137,7 @@ void Core::init_core(std::vector<std::string> parameters)
 {
     (void)parameters;
     open_log();
+    terminal::set_window_title("Lom v" + version::VERSION_STRING + " (" + version::BUILD_TIMESTAMP + ")");
 }
 
 // Catches a segfault or other fatal signal.
@@ -275,7 +276,6 @@ int main(int argc, char** argv)
         if (parameters.size()) { }
 
         // Test code
-        terminal::set_window_title("Lom v" + version::VERSION_STRING + " (" + version::BUILD_TIMESTAMP + ")");
         cout << fg::cyan << style::bold << "Hello, world!" << style::reset << endl;
     }
     catch (std::exception &e) { core().halt(e); }
