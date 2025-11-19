@@ -9,13 +9,15 @@
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS     1
 #endif
-#ifndef __STDC_WANT_LIB_EXT1__
-#define __STDC_WANT_LIB_EXT1__  1
-#endif
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES       1
 #endif
+
+// Windows-specific stuff.
 #ifdef LOM_TARGET_WINDOWS
+#ifndef __STDC_WANT_LIB_EXT1__
+#define __STDC_WANT_LIB_EXT1__  1
+#endif
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN     1
 #endif

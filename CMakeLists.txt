@@ -89,7 +89,7 @@ endif(TARGET_WINDOWS)
 # Source files.
 set(LOM_CPPS
   src/core/core.cpp
-  src/core/terminal.cpp
+  src/core/global/terminal.cpp
   src/util/file/binpath.cpp
   src/util/file/fileutils.cpp
 )
