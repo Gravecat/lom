@@ -27,7 +27,7 @@ if(WIN32)
 elseif(MINGW)
   set(TARGET_WINDOWS 1)
   set(TARGET_MINGW 1)
-elseif(APPLE)
+elseif(APPLE OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   set(TARGET_APPLE 1)
 elseif(UNIX)
   set(TARGET_LINUX 1)
@@ -79,7 +79,7 @@ if(TARGET_WINDOWS)
     if(NOT CMAKE_RC_COMPILER)
       message(FATAL_ERROR "windres not found – cannot compile resources")
     endif()
-  else()    # MSVC or ClangCL
+  else()    # MSVC or Clang
     # CMake already knows where rc.exe lives; just enable the language
     set(CMAKE_RC_COMPILER_INIT rc)
   endif(TARGET_MINGW)
@@ -118,8 +118,8 @@ target_include_directories(lom PRIVATE
 # Compiler-specific flags.
 option(WARNINGS_AS_ERRORS "Turn warnings into errors" OFF)
 target_compile_options(lom PRIVATE
-  # GNU / Clang
-  $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:
+  # GNU / Clang / Apple Clang
+  $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
     -Wall -Wextra -pedantic -pedantic-errors
     $<$<BOOL:${WARNINGS_AS_ERRORS}>:-Werror>
   >
@@ -133,11 +133,13 @@ target_compile_options(lom PRIVATE
 # Compiler-specific optimization and debug flags.
 target_compile_options(lom PRIVATE
   $<$<CONFIG:Release>:
-    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-O2>
-	$<$<CXX_COMPILER_ID:MSVC>:/O2>>
+    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-O2>
+    $<$<CXX_COMPILER_ID:MSVC>:/O2>
+  >
   $<$<CONFIG:Debug>:
-    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-g -Og>
-	$<$<CXX_COMPILER_ID:MSVC>:/Od /Zi>>
+    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-g -Og>
+    $<$<CXX_COMPILER_ID:MSVC>:/Od /Zi>
+  >
 )
 
 # Compiler-specific stripping of symbols.
