@@ -94,6 +94,7 @@ set(LOM_CPPS
   src/core/game.cpp
   src/core/global/terminal.cpp
   src/util/file/binpath.cpp
+  src/util/file/yaml.cpp
 )
 
 # Binary file. LOM_RC should be blank for non-Windows builds.
@@ -169,3 +170,4 @@ add_custom_command(TARGET lom POST_BUILD
 
 # Build some third-party code as separate binaries to be linked in.
 add_subdirectory(src/3rdparty/rapidyaml)
+target_link_libraries(lom PRIVATE rapidyaml)
