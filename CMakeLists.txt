@@ -114,11 +114,18 @@ target_include_directories(lom PRIVATE
 )
 
 # Compiler-specific flags.
+option(WARNINGS_AS_ERRORS "Turn warnings into errors" OFF)
 target_compile_options(lom PRIVATE
+  # GNU / Clang
   $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:
-    -Wall -Wextra -pedantic -pedantic-errors>
+    -Wall -Wextra -pedantic -pedantic-errors
+    $<$<BOOL:${WARNINGS_AS_ERRORS}>:-Werror>
+  >
+  # MSVC
   $<$<CXX_COMPILER_ID:MSVC>:
-    /W4 /permissive->
+    /W4 /permissive-
+    $<$<BOOL:${WARNINGS_AS_ERRORS}>:/WX>
+  >
 )
 
 # Compiler-specific optimization and debug flags.
