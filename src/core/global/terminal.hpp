@@ -1,11 +1,10 @@
-// core/terminal.hpp -- Includes the rang library and iostream for printing coloured text to the terminal, as well as some basic utility functions.
+// core/global/terminal.hpp -- Includes the rang library and iostream for printing coloured text to the terminal, as well as some basic utility functions.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #pragma once
-#include "core/global.hpp"
 
 // rang library, used to add colour to the terminal.
 #include "3rdparty/rang/rang.hpp"
