@@ -4,6 +4,8 @@
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#pragma once
+
 #include <climits>      // definitions such as UINT_MAX
 #include <cstdint>      // typedefs such as uint32_t
 #include <memory>       // std::unique_ptr is used frequently in this project

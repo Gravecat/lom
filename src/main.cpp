@@ -1,8 +1,6 @@
-#include "core/global.hpp"
-
-#include <iostream>
+#include "core/terminal.hpp"
 
 int main() {
-    std::cout << "Hello, world!" << std::endl;
+    cout << fg::cyan << style::bold << "Hello, world!" << style::reset << endl;
     return 0;
 }
