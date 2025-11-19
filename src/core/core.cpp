@@ -183,7 +183,13 @@ void Core::log(std::string msg, int type)
 
     char* buffer = new char[32];
     const time_t now = time(nullptr);
+#if defined(LOM_TARGET_WINDOWS) && !defined(LOM_TARGET_MINGW)
+    tm time_struct;
+    tm* ptm = &time_struct;
+    localtime_s(ptm, &now);
+#else
     const tm *ptm = localtime(&now);
+#endif
     std::strftime(&buffer[0], 32, "%H:%M:%S", ptm);
     std::string time_str = &buffer[0];
     msg = "[" + time_str + "] " + txt_tag + msg;
