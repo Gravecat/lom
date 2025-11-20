@@ -1,4 +1,4 @@
-// core/global/terminal.hpp -- Includes the rang library and iostream for printing coloured text to the terminal, as well as some basic utility functions.
+// core/terminal.hpp -- Includes the rang library and iostream for printing coloured text to the terminal, as well as some basic utility functions.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
@@ -20,6 +20,6 @@ using namespace rang;
 namespace lom {
 namespace terminal {
 
-void    set_window_title(std::string new_title);    // Attempts to set the title of the console window. May not work on all platforms.
+void    set_window_title(const std::string& new_title); // Attempts to set the title of the console window. May not work on all platforms.
 
 } } // namespace terminal, lom

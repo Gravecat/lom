@@ -11,6 +11,7 @@
 #include "cmake/version.hpp"
 #include "core/core.hpp"
 #include "core/game.hpp"
+#include "core/terminal.hpp"
 #include "util/file/binpath.hpp"
 #include "util/file/yaml.hpp"
 
@@ -182,7 +183,7 @@ void Core::hook_signals()
 void Core::init_core(std::vector<std::string> parameters)
 {
     open_log();
-    terminal::set_window_title("Lom v" + version::VERSION_STRING + " (" + version::BUILD_TIMESTAMP + ")");
+    bool set_title = rang::rang_implementation::supportsColor();
 
     // Check command-line parameters.
     for (auto param : parameters)
@@ -196,6 +197,7 @@ void Core::init_core(std::vector<std::string> parameters)
         {
             core().log("Force-enabling ANSI colour codes.");
             rang::setControlMode(rang::control::Force);
+            set_title = true;
         }
 
 #ifdef LOM_TARGET_WINDOWS
@@ -212,6 +214,7 @@ void Core::init_core(std::vector<std::string> parameters)
 #endif
     }
 
+    if (set_title) terminal::set_window_title("Lom v" + version::VERSION_STRING + " (" + version::BUILD_TIMESTAMP + ")");
     find_gamedata();
     game_ptr_ = std::make_unique<Game>();
 }
