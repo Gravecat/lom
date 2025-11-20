@@ -45,9 +45,13 @@ void Core::check_stderr()
 // Cleans up all Core-managed objects.
 void Core::cleanup()
 {
-    game_ptr_.reset(nullptr);
-    close_log();
     std::cout << rang::style::reset;    // Reset any lingering ANSI codes.
+    std::cout.flush();  // Ensure anything left on the console output buffer (including the reset code we just added) is flushed.
+
+    // Release all attached objects.
+    game_ptr_.reset(nullptr);
+
+    close_log();    // Close the log file.
 }
 
 // Closes the system log and releases hooks.
@@ -91,9 +95,9 @@ std::string Core::datafile(const std::string file)
 // Destroys the singleton Core object and ends execution.
 void Core::destroy_core(int exit_code)
 {
-    //if (exit_code == EXIT_SUCCESS) log("Normal core shutdown requested.");
-    //else if (exit_code == EXIT_FAILURE) log("Emergency core shutdown requested.", Core::CORE_CRITICAL);
-    //else log("Core shutdown with unknown error code: " + std::to_string(exit_code), Core::CORE_ERROR);
+    if (exit_code == EXIT_SUCCESS) this->log("Normal core shutdown requested.");
+    else if (exit_code == EXIT_FAILURE) this->log("Emergency core shutdown requested.", Core::CORE_CRITICAL);
+    else this->log("Core shutdown with unknown error code: " + std::to_string(exit_code), Core::CORE_ERROR);
     cleanup();
     std::exit(exit_code);
 }
@@ -181,7 +185,12 @@ void Core::hook_signals()
 // Sets up the core game classes and data, and the terminal subsystem.
 void Core::init_core(std::vector<std::string> parameters)
 {
-    open_log();
+    // Boosts performance on C++ console output (at the cost of not being able to reliably use C console output, e.g. printf, between flushes). This is
+    // especially important for MinGW builds, but should provide a small boost to performance on other platforms too.
+    std::ios_base::sync_with_stdio(false);
+    std::cout.tie(nullptr);
+
+    open_log(); // Creates and opens the log.txt file.
     bool set_title = rang::rang_implementation::supportsColor();
 
     // Check command-line parameters.
