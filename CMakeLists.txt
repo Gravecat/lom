@@ -155,7 +155,6 @@ target_link_options(lom PRIVATE
 # Windows-specific stuff.
 if(TARGET_WINDOWS)
   add_compile_definitions(
-    _CRT_SECURE_NO_WARNINGS
     NOMINMAX
     VC_EXTRALEAN
     WIN32_LEAN_AND_MEAN
