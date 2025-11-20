@@ -85,7 +85,7 @@ void print(const std::string& text)
         if (invalid_tag) invalid_tags.push_back(tag);
     }
 
-    std::cout << rang::style::reset << std::endl;   // Reset any ANSI tags and end the line.
+    std::cout << rang::style::reset << '\n';    // Reset any ANSI tags and end the line.
 
     for (auto tag : invalid_tags)
         core().nonfatal("Invalid colour tag: {" + tag + "}", Core::CORE_WARN);
