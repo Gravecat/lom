@@ -6,6 +6,7 @@
 
 #include "core/core.hpp"
 #include "core/game.hpp"
+#include "core/terminal.hpp"
 #include "world/codex.hpp"
 
 namespace lom {

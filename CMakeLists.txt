@@ -98,7 +98,7 @@ endif(TARGET_WINDOWS)
 set(LOM_CPPS
   src/core/core.cpp
   src/core/game.cpp
-  src/core/global/terminal.cpp
+  src/core/terminal.cpp
   src/util/file/binpath.cpp
   src/util/file/fileutils.cpp
   src/util/file/yaml.cpp
