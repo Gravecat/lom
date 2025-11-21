@@ -29,6 +29,7 @@ set(WESTGATE_CPPS
 
 # Third-party code being built as separate object files.
 add_subdirectory(src/3rdparty/fantasyname)
+add_subdirectory(src/3rdparty/murmurhash3)
 add_subdirectory(src/3rdparty/rapidyaml)
 
 # Automatically generate version strings used in-game and in the Windows resource file, from this specified game version.
@@ -123,6 +124,7 @@ add_executable(westgate ${WESTGATE_CPPS} ${WESTGATE_RC})
 target_link_libraries(westgate PRIVATE
   ${CMAKE_THREAD_LIBS_INIT}
   fantasyname
+  murmurhash3
   rapidyaml
 )
 

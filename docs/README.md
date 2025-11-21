@@ -6,6 +6,8 @@ Westgate is copyright © 2025 [Raine "Gravecat" Simmons](https://github.com/Grav
 
 [Fantasy Name Generator](https://github.com/skeeto/fantasyname) by skeeto.
 
+[MurmurHash3](https://github.com/aappleby/smhasher/tree/master) by Austin Appleby.
+
 [Random for modern C++](https://github.com/ilqvya/random) copyright © 2017-2023 effolkronium (Illia Polishchuk).
 
 [rang](https://github.com/agauniyal/rang) by Abhinav Gauniyal.
