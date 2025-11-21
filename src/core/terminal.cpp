@@ -71,6 +71,13 @@ unsigned int get_width()
 // Prints a string of text with std::cout, processing ANSI colour tags.
 void print(const std::string& text)
 {
+    // Handle blank text by just printing a newline.
+    if (!text.size())
+    {
+        std::cout << '\n';
+        return;
+    }
+
     const unsigned int console_width = get_width();
     unsigned int chars_so_far = 0;
 
