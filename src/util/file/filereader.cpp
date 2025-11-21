@@ -30,6 +30,24 @@ FileReader::FileReader(std::string filename, bool allow_missing_file) : read_ind
     file.close();
 }
 
+// Reads two bytes and compares them to the standard footer.
+bool FileReader::check_footer()
+{
+    uint8_t check[2];
+    check[0] = read_data<uint8_t>();
+    check[1] = read_data<uint8_t>();
+    return (check[0] == 0x13 && check[1] == 0x51);
+}
+
+bool FileReader::check_header()
+{
+    uint8_t check[3];
+    check[0] = read_data<uint8_t>();
+    check[1] = read_data<uint8_t>();
+    check[2] = read_data<uint8_t>();
+    return (check[0] == 0xC0 && check[1] == 0xFF && check[2] == 0xEE);
+}
+
 // Reads a blob of binary data, in the form of a std::vector<char>
 std::vector<char> FileReader::read_char_vec()
 {
