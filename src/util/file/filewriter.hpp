@@ -18,6 +18,8 @@ public:
             FileWriter(const std::string& filename);    // Constructor, opens a binary file.
             ~FileWriter();                              // Destructor, closes any open binary files.
     void    write_char_vec(std::vector<char> vec);      // Writes binary data (in the form of an std::vector<char>) to the binary file.
+    void    write_footer();                             // Writes a standard EOF footer, so the game can confirm the file ends where it should.
+    void    write_header();                             // Writes a standard header, so the game can identify its own files.
     void    write_string(std::string str);              // Writes a string to the file.
 
     // Writes a basic data type (integer, float, etc.) to the file.

@@ -31,6 +31,21 @@ void FileWriter::write_char_vec(std::vector<char> vec)
     file_out_.write(vec.data(), vec.size());
 }
 
+// Writes a standard EOF footer, so the game can confirm the file ends where it should.
+void FileWriter::write_footer()
+{
+    write_data<uint8_t>(0x13);
+    write_data<uint8_t>(0x51);
+}
+
+// Writes a standard header string, so the game can identify its own files.
+void FileWriter::write_header()
+{
+    write_data<uint8_t>(0xC0);
+    write_data<uint8_t>(0xFF);
+    write_data<uint8_t>(0xEE);
+}
+
 // Writes a string to the file.
 void FileWriter::write_string(std::string str)
 {
