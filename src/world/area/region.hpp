@@ -6,12 +6,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #pragma once
+#include "core/pch.hpp" // Precompiled header
 
-#include <cstdint>
 #include <map>
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "world/area/room.hpp"
 

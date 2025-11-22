@@ -5,10 +5,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #pragma once
-
-#include <cstdint>
-#include <string>
-#include <vector>
+#include "core/pch.hpp" // Precompiled header
 
 namespace westgate {
 

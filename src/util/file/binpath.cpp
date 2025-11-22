@@ -15,7 +15,6 @@
 #endif
 
 #ifdef WESTGATE_TARGET_LINUX
-#include <climits>      // PATH_MAX
 #include <libgen.h>     // dirname()
 #if defined(__sun)
     #define PROC_SELF_EXE "/proc/self/path/a.out"
@@ -25,7 +24,6 @@
 #endif
 
 #ifdef WESTGATE_TARGET_APPLE
-#include <climits>          // PATH_MAX
 #include <libgen.h>         // dirname()
 #include <mach-o/dyld.h>    // _NSGetExecutablePath()
 #endif

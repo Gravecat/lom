@@ -2,6 +2,7 @@
 // Raine "Gravecat" Simmons, 2025.
 
 #pragma once
+#include "core/pch.hpp" // Precompiled header
 
 #include "3rdparty/random/random.hpp"
 

@@ -5,7 +5,7 @@
 # SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 project(westgate LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -143,6 +143,9 @@ target_include_directories(westgate PRIVATE
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_CURRENT_BINARY_DIR}"
 )
+
+# Precompiled global header.
+target_precompile_headers(westgate PRIVATE src/core/pch.hpp)
 
 # Compiler-specific flags.
 option(WARNINGS_AS_ERRORS "Turn warnings into errors" OFF)

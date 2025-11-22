@@ -4,9 +4,7 @@
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-#include <cstdlib>
 #include <filesystem>
-#include <stdexcept>
 
 #include "cmake/version.hpp"
 #include "core/core.hpp"

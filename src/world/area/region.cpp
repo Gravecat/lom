@@ -6,7 +6,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include <filesystem>
-#include <stdexcept>
 
 #include "core/core.hpp"
 #include "util/file/binpath.hpp"
