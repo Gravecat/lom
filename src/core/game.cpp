@@ -34,6 +34,7 @@ void Game::begin()
 {
     codex_ptr_ = std::make_unique<Codex>();
     title_screen();
+    player_ptr_->parent_room()->look();
     main_loop();
 }
 
@@ -78,7 +79,6 @@ void Game::create_world()
         new_region->save(save_id_);
     }
     terminal::print("{Y}World generation complete!");
-    terminal::print();
 }
 
 // Shuts things down cleanly and exits the game.
@@ -98,6 +98,9 @@ void Game::load_game(int save_slot)
     auto new_region = std::make_unique<Region>();
     new_region->load_from_save(save_slot, 0);
     if (!player_ptr_) throw std::runtime_error("Could not locate player character in saved region!");
+    region_ptr_ = std::move(new_region);
+
+    terminal::print("{Y}Saved game loaded successfully!");
 }
 
 // brøether, may i have the lööps

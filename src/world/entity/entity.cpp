@@ -28,8 +28,6 @@ Entity::Entity(FileReader* file) : gender_(Gender::NONE), name_("undefined entit
     // Retrieve the Entity's name and gender.
     name_ = file->read_string();
     gender_ = file->read_data<Gender>();
-
-    core().log("Loaded Entity");
 }
 
 // Retrieves the gender (if any) of this Entity.

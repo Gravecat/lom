@@ -26,6 +26,7 @@ public:
     void                add_entity(std::unique_ptr<Entity> entity); // Adds an Entity to this room directly. Use transfer() to move Entities between rooms.
     const std::string&  desc() const;   // Retrieves the description of this Room.
     uint32_t            id() const;     // Retrieves the hashed ID of this Room.
+    void                look() const;   // Look around you. Just look around you.
     const std::string&  name(bool full_name) const; // Retrieves the name of this Room.
     void                save(FileWriter* file);     // Saves this Room to a specified save file. Should only be called by a parent Region.
     void                set_desc(const std::string& new_desc);  // Sets the description of this Room.
