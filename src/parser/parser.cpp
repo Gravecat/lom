@@ -11,20 +11,19 @@
 
 #include "core/core.hpp"
 #include "core/terminal.hpp"
+#include "parser/cheats.hpp"
 #include "parser/meta.hpp"
 #include "parser/parser.hpp"
 #include "parser/parser-macros.hpp"
 #include "util/text/hash.hpp"
 #include "util/text/stringutils.hpp"
 
-// Uncomment this to show the hashes of unknown verbs.
-#define PARSER_SHOW_UNKNOWN_HASH
-
 namespace westgate {
 namespace parser {
 
 static const std::map<uint32_t, std::function<void(std::vector<uint32_t>&, std::vector<std::string>&)>> parser_verbs = {
-    { 3289483580, meta::quit }
+    { 2252282012, cheats::hash },   // #hash
+    { 3289483580, meta::quit }      // quit
 };
 
 // Processes input from the player.
@@ -39,14 +38,7 @@ void process_input(const std::string& input)
         word_hashes.push_back(hash::murmur3(stringutils::str_tolower(word)));
 
     auto result = parser_verbs.find(word_hashes.at(0));
-    if (result == parser_verbs.end())
-    {
-        terminal::print("{Y}I don't know that word."
-#ifdef PARSER_SHOW_UNKNOWN_HASH
-            + std::string(" {y}(Hash: ") + words.at(0) + " = " + std::to_string(word_hashes.at(0)) + ")"
-#endif
-        );
-    }
+    if (result == parser_verbs.end()) terminal::print("{Y}I don't know that word.");
     else result->second(word_hashes, words);
 }
 
