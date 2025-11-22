@@ -19,7 +19,7 @@ YAML::YAML(const std::string& filename, bool allow_backslash) { load_file(filena
 YAML::YAML(const ryml::Tree tree, ryml::ConstNodeRef new_ref) : ref_(new_ref), tree_(tree) { }
 
 // Retrieves a value from a sequence, as a string.
-std::string YAML::get(unsigned int index) const
+std::string YAML::get(size_t index) const
 {
     if (!is_seq()) throw std::runtime_error("Not a sequence!");
     if (index >= size()) throw std::runtime_error("Invalid sequence index!");
@@ -40,7 +40,7 @@ std::vector<std::string> YAML::get_seq(const std::string &key) const
     YAML yaml = get_child(key);
     if (!yaml.is_seq()) throw std::runtime_error("Invalid YAML key (not a sequence): " + key);
     std::vector<std::string> vec(yaml.size());
-    for (unsigned int i = 0; i < yaml.size(); i++)
+    for (size_t i = 0; i < yaml.size(); i++)
         vec.at(i) = yaml.get(i);
     return vec;
 }
@@ -93,7 +93,7 @@ void YAML::load_file(const std::string& filename, bool allow_backslash)
     // string literal of \ instead of... I don't know, it's probably used for writing hex or octal or some shit.
     if (!allow_backslash)
     {
-        for (unsigned int i = 0; i < file_string.size(); i++)
+        for (size_t i = 0; i < file_string.size(); i++)
         {
             if (file_string[i] == '\\')
             {
@@ -110,7 +110,7 @@ void YAML::load_file(const std::string& filename, bool allow_backslash)
 ryml::ConstNodeRef YAML::noderef() const { return ref_; }
 
 // Checks the number of children on the noderef.
-unsigned int YAML::size() const { return static_cast<unsigned int>(noderef().num_children()); }
+size_t YAML::size() const { return static_cast<size_t>(noderef().num_children()); }
 
 // Returns the value of a key, as a string.
 std::string YAML::val(const std::string& key) const

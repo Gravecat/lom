@@ -74,7 +74,7 @@ void Game::create_world()
         if (file.is_regular_file()) regions.push_back(file.path().filename());
 
     // One at a time, load each region into memory.
-    for (unsigned int i = 0; i < regions.size(); i++)
+    for (size_t i = 0; i < regions.size(); i++)
     {
         terminal::print("{c}Processing region file {C}" + std::to_string(i + 1) + " {c}of {C}" + std::to_string(regions.size()) + "{c}...");
         std::filesystem::path region_file = regions.at(i);

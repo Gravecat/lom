@@ -19,7 +19,7 @@ namespace westgate {
 // Picks a consonant from the table, for forming atoms.
 std::string ProcNameGen::consonant()
 {
-    const int pos = random::get<unsigned int>(0, consonant_block.size() - 1);
+    const size_t pos = random::get<size_t>(0, consonant_block.size() - 1);
     return consonant_block.substr(pos, 1);
 }
 
@@ -119,7 +119,7 @@ std::string ProcNameGen::npc_name(Gender gender, bool with_surname)
         int vowel_count = 0;
         bool ends_in_vowel = false;
         to_check[0] = std::tolower(to_check[0]);
-        for (unsigned int i = 0; i < to_check.size(); i++)
+        for (size_t i = 0; i < to_check.size(); i++)
         {
             const char ch = to_check[i];
             const bool last_char = (i == to_check.size() - 1);
@@ -213,7 +213,7 @@ std::string ProcNameGen::surname()
 // Picks a vowel from the table, for forming atoms.
 std::string ProcNameGen::vowel()
 {
-    const int pos = random::get<int>(0, vowel_block.size() - 1);
+    const size_t pos = random::get<size_t>(0, vowel_block.size() - 1);
     return vowel_block.substr(pos, 1);
 }
 
