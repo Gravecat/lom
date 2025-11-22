@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <map>
 #include <string>
 
@@ -17,7 +18,7 @@ class YAML {
 public:
                     YAML();                                     // Blank constructor.
                     YAML(const std::string& filename, bool allow_backslash = false);    // Calls load_file() when constructing.
-    std::string     get(unsigned int index) const;              // Retrieves a value from a sequence, as a string.
+    std::string     get(size_t index) const;                    // Retrieves a value from a sequence, as a string.
     YAML            get_child(const std::string& key) const;    // Retrieves a child noderef of this tree.
     std::vector<std::string>    get_seq(const std::string &key) const;  // Retrieves all values of a sequence.
     bool            is_map() const;                             // Checks if the noderef points to a valid map.
@@ -26,7 +27,7 @@ public:
     std::vector<std::string>    keys() const;                   // Retrieves the key values of a map.
     std::map<std::string, std::string>  keys_vals() const;      // Retrieves the key/value pairs of a map.
     void            load_file(const std::string& filename, bool allow_backslash = false);   // Loads a YAML file into memory and parse it.
-    unsigned int    size() const;                               // Checks the number of children on the noderef.
+    size_t          size() const;                               // Checks the number of children on the noderef.
     std::string     val(const std::string& key) const;          // Returns the value of a key, as a string.
 
 protected:

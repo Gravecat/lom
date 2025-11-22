@@ -165,7 +165,7 @@ void print(const std::string& text, bool newline)
         // actually happen, but we've gotta handle it just in case.
         if (before_space.size() >= console_width)
         {
-            int available_size = console_width - chars_so_far;
+            int available_size = static_cast<int>(console_width) - chars_so_far;
             const std::string cropped_before = before_space.substr(0, available_size);
             std::cout << cropped_before << '\n';
             chars_so_far = 0;

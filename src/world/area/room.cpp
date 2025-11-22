@@ -61,9 +61,9 @@ void Room::load(FileReader* file)
     desc_ = file->read_string();
 
     // Load any Entities in this Room.
-    const uint32_t entity_count = file->read_data<uint32_t>();
+    const size_t entity_count = file->read_data<size_t>();
     entities_.reserve(entity_count);
-    for (unsigned int i = 0; i < entity_count; i++)
+    for (size_t i = 0; i < entity_count; i++)
     {
         EntityType type = file->read_data<EntityType>();
         switch(type)
@@ -102,7 +102,7 @@ void Room::save(FileWriter* file)
     file->write_string(desc_);
 
     // Save any Entities in this Room.
-    file->write_data<uint32_t>(entities_.size());
+    file->write_data<size_t>(entities_.size());
     for (auto &entity : entities_)
         entity->save(file);
 }
@@ -166,7 +166,7 @@ void Room::transfer(Entity* entity_ptr, Room* room_ptr)
     // Try to determine which vector position houses the Entity being moved.
     uint32_t source_id = 0;
     bool source_found = false;
-    for (unsigned int i = 0; i < entities_.size(); i++)
+    for (size_t i = 0; i < entities_.size(); i++)
     {
         if (entities_.at(i).get() == entity_ptr)
         {

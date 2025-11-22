@@ -33,8 +33,8 @@ public:
     void        set_size(size_t new_size);  // Reallocates memory for the rooms_ vector, if we know exactly how large it's gonna be.
 
 private:
-    static constexpr uint32_t   REGION_SAVE_VERSION =   1;  // The expected version for saving/loading binary game data.
-    static constexpr int        REGION_YAML_VERSION =   1;  // The expected version for region YAML data.
+    static constexpr uint32_t   REGION_SAVE_VERSION =   2;  // The expected version for saving/loading binary game data.
+    static constexpr uint32_t   REGION_YAML_VERSION =   1;  // The expected version for region YAML data.
 
     void    rebuild_room_id_map();  // Rebuilds the room ID map, for quickly looking up Rooms by their hashed ID.
 

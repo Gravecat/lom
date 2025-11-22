@@ -80,11 +80,11 @@ void Region::load_from_save(int save_slot, uint32_t region_id)
     // Get the ID, name and size of the Region.
     id_ = file->read_data<uint32_t>();
     name_ = file->read_string();
-    const unsigned int region_size = file->read_data<unsigned int>();
+    const size_t region_size = file->read_data<size_t>();
     set_size(region_size);
 
     // Create and load the Rooms in this Region.
-    for (unsigned int i = 0; i < region_size; i++)
+    for (size_t i = 0; i < region_size; i++)
         rooms_.push_back(std::make_unique<Room>(file.get()));
     rebuild_room_id_map();
 
@@ -113,7 +113,7 @@ void Region::load_from_gamedata(const std::string& filename)
     const YAML region_id = yaml.get_child("REGION_IDENTIFIER");
     if (!region_id.is_map()) throw std::runtime_error(filename + ": Cannot find region identifier data!");
     if (!region_id.key_exists("version")) throw std::runtime_error(filename + ": Missing version in identifier data!");
-    unsigned int region_version;
+    uint32_t region_version;
     try { region_version = std::stoul(region_id.val("version")); }
     catch (std::invalid_argument&) { throw std::runtime_error(filename + ": Invalid region version identifier!"); }
     if (region_version != REGION_YAML_VERSION) throw std::runtime_error(filename + ": Invalid region version (" + std::to_string(region_version) +
@@ -182,7 +182,7 @@ void Region::save(int save_slot)
     // Write the ID, name, and size of the region.
     file->write_data<uint32_t>(id_);
     file->write_string(name_);
-    file->write_data<unsigned int>(rooms_.size());
+    file->write_data<size_t>(rooms_.size());
 
     // Instruct each contained Room to save itself.
     for (auto &room : rooms_)

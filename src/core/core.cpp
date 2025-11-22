@@ -130,7 +130,7 @@ void Core::find_gamedata()
 
     YAML yaml_file(datafile("westgate.yml"));
     if (!yaml_file.is_map() || !yaml_file.key_exists("westgate_gamedata_version")) throw std::runtime_error("westgate.yml: Invalid file format!");
-    const int data_version = std::stoi(yaml_file.val("westgate_gamedata_version"));
+    const uint32_t data_version = std::stoul(yaml_file.val("westgate_gamedata_version"));
     if (data_version != WESTGATE_GAMEDATA_VERSION) this->halt("Unexpected gamedata version! (" + std::to_string(data_version) + ", expected " +
         std::to_string(WESTGATE_GAMEDATA_VERSION) + ")");
 }
