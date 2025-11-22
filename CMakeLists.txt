@@ -16,6 +16,7 @@ set(WESTGATE_CPPS
   src/core/core.cpp
   src/core/game.cpp
   src/core/terminal.cpp
+  src/parser/cheats.cpp
   src/parser/meta.cpp
   src/parser/parser.cpp
   src/util/file/binpath.cpp
