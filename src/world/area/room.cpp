@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 #include "core/core.hpp"
+#include "core/terminal.hpp"
 #include "util/file/filereader.hpp"
 #include "util/file/filewriter.hpp"
 #include "util/text/hash.hpp"
@@ -67,12 +68,19 @@ void Room::load(FileReader* file)
         EntityType type = file->read_data<EntityType>();
         switch(type)
         {
-            case EntityType::ENTITY: entities_.push_back(std::make_unique<Entity>(file)); break;
-            case EntityType::MOBILE: entities_.push_back(std::make_unique<Mobile>(file)); break;
-            case EntityType::PLAYER: entities_.push_back(std::make_unique<Player>(file)); break;
+            case EntityType::ENTITY: add_entity(std::make_unique<Entity>(file)); break;
+            case EntityType::MOBILE: add_entity(std::make_unique<Mobile>(file)); break;
+            case EntityType::PLAYER: add_entity(std::make_unique<Player>(file)); break;
             default: throw std::runtime_error("Attempt to load unknown entity type: " + std::to_string(static_cast<int>(type)));
         }
     }
+}
+
+// Look around you. Just look around you.
+void Room::look() const
+{
+    terminal::print("\n{C}" + name_[0]);
+    terminal::print(desc_);
 }
 
 // Retrieves the name of this Room.
