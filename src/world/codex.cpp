@@ -4,8 +4,6 @@
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-#include <stdexcept>
-
 #include "core/core.hpp"
 #include "core/game.hpp"
 #include "util/text/namegen.hpp"

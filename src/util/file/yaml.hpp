@@ -5,10 +5,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #pragma once
+#include "core/pch.hpp" // Precompiled header
 
-#include <cstddef>
 #include <map>
-#include <string>
 
 #include "3rdparty/rapidyaml/rapidyaml-0.10.0.hpp"
 

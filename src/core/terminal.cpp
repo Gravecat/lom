@@ -4,11 +4,8 @@
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-#include <cstdlib>
 #include <functional>
 #include <iostream>
-#include <stdexcept>
-#include <vector>
 
 #if defined(WESTGATE_TARGET_LINUX) || defined(WESTGATE_TARGET_APPLE)
 #include <cstdio>
