@@ -157,6 +157,9 @@ void Game::new_game(const uint32_t starting_region, const string& starting_room)
 // Returns a reference to the Player object.
 Player& Game::player() const { return *player_ptr_; }
 
+// Returns a pointer to the currently-loaded Region, or nullptr if none is loaded.
+Region* Game::region() const { return region_ptr_.get(); }
+
 // Save the game, if there's a game in progress.
 void Game::save(bool chatty)
 {
