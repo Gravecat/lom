@@ -11,5 +11,15 @@ REGION_IDENTIFIER:
 SULA_PLAINS:
   desc: >
     A wide field of grassy plains surrounds you, occasional bright flowers punctuating the green with a flash of colour. The sun shines brightly overhead, the
-    sky a clear blue with a few wisps of clouds.
+    sky a clear blue with a few wisps of clouds. To the east stands a small wooden shack - more of a shed, really.
+  exits:
+    east: SULA_SHACK
   name: [ Grassy Plains, plains ]
+
+SULA_SHACK:
+  desc: >
+    The interior of this small wooden shack reveals it to be more of a shed than anything, various shelves attached to the walls holding miscellaneous
+    bric-a-brac, while a few dusty barrels and crates occupy the east wide. The only door leads back outside, to the west.
+  exits:
+    west: SULA_PLAINS
+  name: [ Wooden Shack, shack ]

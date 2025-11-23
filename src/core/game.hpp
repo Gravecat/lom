@@ -21,6 +21,7 @@ public:
     Codex&          codex() const;  // Returns a reference to the Codex object.
     void            leave_game();   // Shuts things down cleanly and exits the game.
     Player&         player() const; // Returns a reference to the Player object.
+    Region*         region() const; // Returns a pointer to the currently-loaded Region, or nullptr if none is loaded.
     void            save(bool chatty);  // Save the game, if there's a game in progress.
     void            set_player(Player* player_ptr); // Sets the Player pointer. Use with caution.
 

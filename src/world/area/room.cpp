@@ -5,10 +5,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "core/core.hpp"
+#include "core/game.hpp"
 #include "core/terminal.hpp"
 #include "util/file/filereader.hpp"
 #include "util/file/filewriter.hpp"
 #include "util/text/hash.hpp"
+#include "world/area/region.hpp"
 #include "world/area/room.hpp"
 #include "world/entity/mobile.hpp"
 #include "world/entity/player.hpp"
@@ -22,7 +24,7 @@ using std::unique_ptr;
 namespace westgate {
 
 // Creates a blank Room with default values and no ID.
-Room::Room() : desc_("Missing room description."), id_(0), name_{"Undefined Room", "undefined"} { }
+Room::Room() : desc_("Missing room description."), exits_{}, id_(0), name_{"Undefined Room", "undefined"} { }
 
 // Creates a Room with a specified ID.
 Room::Room(const string& new_id) : Room()
@@ -44,8 +46,24 @@ void Room::add_entity(unique_ptr<Entity> entity)
 // Retrieves the description of this Room.
 const string& Room::desc() const { return desc_; }
 
+// Gets the Room linked in the specified direction, or nullptr if none is linked.
+Room* Room::get_link(Direction dir)
+{
+    const uint8_t array_pos = static_cast<uint8_t>(dir) - 1;
+    if (array_pos >= 10)
+    {
+        core().nonfatal("Attempt to retrieve invalid room link on " + id_str_ + " (" + std::to_string(array_pos) + ")", Core::CORE_ERROR);
+        return nullptr;
+    }
+    if (!exits_[array_pos]) return nullptr;
+    return game().region()->find_room(exits_[array_pos]);
+}
+
 // Retrieves the hashed ID of this Room.
 uint32_t Room::id() const { return id_; }
+
+// Retrieves the string ID of this Room.
+const std::string& Room::id_str() const { return id_str_; }
 
 // Loads a Room's data from the specified FileReader, overwriting existing data.
 void Room::load(FileReader* file)
@@ -63,6 +81,10 @@ void Room::load(FileReader* file)
     name_[0] = file->read_string();
     name_[1] = file->read_string();
     desc_ = file->read_string();
+
+    // Read the Room's exits, if any.
+    for (unsigned int i = 0; i < 10; i++)
+        exits_[i] = file->read_data<uint32_t>();
 
     // Load any Entities in this Room.
     const size_t entity_count = file->read_data<size_t>();
@@ -105,6 +127,10 @@ void Room::save(FileWriter* file)
     file->write_string(name_[1]);
     file->write_string(desc_);
 
+    // The Room's exits, if any.
+    for (unsigned int i = 0; i < 10; i++)
+        file->write_data<uint32_t>(exits_[i]);
+
     // Save any Entities in this Room.
     file->write_data<size_t>(entities_.size());
     for (auto &entity : entities_)
@@ -116,7 +142,7 @@ void Room::set_desc(const string& new_desc)
 {
     if (!new_desc.size())
     {
-        core().nonfatal("Attempt to set blank description on room (" + name_[0] + ")", Core::CORE_ERROR);
+        core().nonfatal("Attempt to set blank description on room (" + id_str_ + ")", Core::CORE_ERROR);
         desc_ = "Missing room description.";
     }
     else desc_ = new_desc;
@@ -144,25 +170,25 @@ void Room::transfer(Entity* entity_ptr, Room* room_ptr)
     // First, sanity checks. These should never happen, but could possibly occur as the result of mistakes in the code.
     if (room_ptr == this)
     {
-        if (!entity_ptr) core().nonfatal("Attempt to transfer null entity from " + name_[0] + " to itself.", Core::CORE_ERROR);
-        else core().nonfatal("Attempt to transfer enity (" + entity_ptr->name() + ") from " + name_[0] + " to itself.", Core::CORE_ERROR);
+        if (!entity_ptr) core().nonfatal("Attempt to transfer null entity from " + id_str_ + " to itself.", Core::CORE_ERROR);
+        else core().nonfatal("Attempt to transfer enity (" + entity_ptr->name() + ") from " + id_str_ + " to itself.", Core::CORE_ERROR);
         return;
     }
     if (!entity_ptr)
     {
-        if (!room_ptr) core().nonfatal("Attempt to transfer null entity from " + name_[0] + " to null room.", Core::CORE_ERROR);
-        else core().nonfatal("Attempt to transfer null entity from " + name_[0] + " to " + room_ptr->name(true) + ".", Core::CORE_ERROR);
+        if (!room_ptr) core().nonfatal("Attempt to transfer null entity from " + id_str_ + " to null room.", Core::CORE_ERROR);
+        else core().nonfatal("Attempt to transfer null entity from " + id_str_ + " to " + room_ptr->id_str() + ".", Core::CORE_ERROR);
         return;
     }
     if (!room_ptr)
     {
-        if (!entity_ptr) core().nonfatal("Attempt to transfer null entity from " + name_[0] + " to null room.", Core::CORE_ERROR);
-        else core().nonfatal("Attempt to transfer entity (" + entity_ptr->name() + ") from " + name_[0] + " to null room.", Core::CORE_ERROR);
+        if (!entity_ptr) core().nonfatal("Attempt to transfer null entity from " + id_str_ + " to null room.", Core::CORE_ERROR);
+        else core().nonfatal("Attempt to transfer entity (" + entity_ptr->name() + ") from " + id_str_ + " to null room.", Core::CORE_ERROR);
         return;
     }
     if (entity_ptr->parent_room() != this)
     {
-        core().nonfatal("Attempt to transfer entity (" + entity_ptr->name() + ") from " + name_[0] + " to " + room_ptr->name(true) +
+        core().nonfatal("Attempt to transfer entity (" + entity_ptr->name() + ") from " + id_str_ + " to " + room_ptr->id_str() +
             " while entity is not correctly parented to this room.", Core::CORE_ERROR);
         return;
     }
@@ -181,7 +207,7 @@ void Room::transfer(Entity* entity_ptr, Room* room_ptr)
     }
     if (!source_found)
     {
-        core().nonfatal("Attempt to transfer entity (" + entity_ptr->name() + ") from " + name_[0] + " to " + room_ptr->name(true) +
+        core().nonfatal("Attempt to transfer entity (" + entity_ptr->name() + ") from " + id_str_ + " to " + room_ptr->id_str() +
             ", while entity is not contained within the parent room.", Core::CORE_ERROR);
         return;
     }
