@@ -15,11 +15,16 @@ class Player : public Mobile {
 public:
                 Player() = delete;  // No default constructor; use nullptr on the constructor below.
                 Player(FileReader* file);   // Creates a blank Player, then loads its data from a FileReader.
+    uint32_t    region() const;     // Checks what Region the Player is currently in.
     void        save(FileWriter* file) override;    // Saves this Player to a save game file.
+    void        set_parent_entity(Entity* new_entity_parent = nullptr) override;    // This is a big no-no. We're overriding this method for safety reasons.
+    void        set_parent_room(Room* new_room_parent = nullptr) override;  // Sets a new Room as the parent of this Player.
     EntityType  type() const override { return EntityType::PLAYER; }    // Self-identifies this Entity's derived class.
 
+private:
+    static constexpr uint32_t   PLAYER_SAVE_VERSION =   1;  // The expected version for saving/loading binary game data.
+
     unsigned int    region_;    // The current Region the Player is in.
-    uint32_t        room_;      // The Room ID the Player is in.    
 };
 
 Player& player();   // A shortcut instead of using game().player()

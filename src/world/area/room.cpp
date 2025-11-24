@@ -14,6 +14,7 @@
 #include "world/area/room.hpp"
 #include "world/entity/mobile.hpp"
 #include "world/entity/player.hpp"
+#include "world/world.hpp"
 
 using std::make_unique;
 using std::runtime_error;
@@ -33,9 +34,6 @@ Room::Room(const string& new_id) : Room()
     id_ = hash::murmur3(new_id);
 }
 
-// Creates a blank Room, then loads its data from the specified FileReader.
-Room::Room(FileReader* file) : Room() { load(file); }
-
 // Adds an Entity to this room directly. Use transfer() to move Entities between rooms.
 void Room::add_entity(unique_ptr<Entity> entity)
 {
@@ -49,6 +47,10 @@ const string& Room::desc() const { return desc_; }
 // Gets the Room linked in the specified direction, or nullptr if none is linked.
 Room* Room::get_link(Direction dir)
 {
+    // todo: fix this for new region system
+    (void)dir;
+    return nullptr;
+    /*
     const uint8_t array_pos = static_cast<uint8_t>(dir) - 1;
     if (array_pos >= 10)
     {
@@ -57,6 +59,7 @@ Room* Room::get_link(Direction dir)
     }
     if (!exits_[array_pos]) return nullptr;
     return game().region()->find_room(exits_[array_pos]);
+    */
 }
 
 // Retrieves the hashed ID of this Room.
@@ -65,28 +68,14 @@ uint32_t Room::id() const { return id_; }
 // Retrieves the string ID of this Room.
 const std::string& Room::id_str() const { return id_str_; }
 
-// Loads a Room's data from the specified FileReader, overwriting existing data.
-void Room::load(FileReader* file)
+// Loads only the changes to this Room from a save file. Should only be called by a parent Region.
+void Room::load_delta(FileReader* file)
 {
-    // Check that the save file version matches.
-    const uint32_t save_version = file->read_data<uint32_t>();
-    if (save_version != ROOM_SAVE_VERSION) throw runtime_error("Invalid room version in saved data (" + to_string(save_version) + ", expected " +
-        to_string(ROOM_SAVE_VERSION) + ")");
-
-    // Read the new Room IDs.
-    id_ = file->read_data<uint32_t>();
-    id_str_ = file->read_string();
-
-    // Read the Room's name and description.
-    name_[0] = file->read_string();
-    name_[1] = file->read_string();
-    desc_ = file->read_string();
-
-    // Read the Room's exits, if any.
-    for (unsigned int i = 0; i < 10; i++)
-        exits_[i] = file->read_data<uint32_t>();
-
     // Load any Entities in this Room.
+    const uint32_t entity_tag = file->read_data<uint32_t>();
+    if (entity_tag != ROOM_DELTA_ENTITIES) throw runtime_error("Invalid delta tag in room data (" + to_string(entity_tag) + ", expected " +
+        to_string(ROOM_DELTA_ENTITIES) + ")");
+
     const size_t entity_count = file->read_data<size_t>();
     entities_.reserve(entity_count);
     for (size_t i = 0; i < entity_count; i++)
@@ -112,26 +101,24 @@ void Room::look() const
 // Retrieves the name of this Room.
 const string& Room::name(bool full_name) const { return name_[full_name ? 0 : 1]; }
 
-// Saves this Room to a specified save file. Should only be called by a parent Region.
-void Room::save(FileWriter* file)
+// Returns the ID of the Region this Room belongs to.
+uint32_t Room::region() const
+{ return world().find_room_region(id_); }
+
+// Saves only the changes to this Room in a save file. Should only be called by a parent Region.
+void Room::save_delta(FileWriter* file)
 {
-    // Write the save version for this Room.
+    // Right now, we're not saving any Room data *except* for Entities.
+    bool changes = (entities_.size() > 0);
+    if (!changes) return;
+
+    // Write the save version for this Room, and the Room's ID.
+    file->write_data<uint32_t>(Region::REGION_DELTA_ROOM);
     file->write_data<uint32_t>(ROOM_SAVE_VERSION);
-
-    // Write the Room's IDs, both string and hashed versions.
     file->write_data<uint32_t>(id_);
-    file->write_string(id_str_);
-
-    // Write the Room's name and description.
-    file->write_string(name_[0]);
-    file->write_string(name_[1]);
-    file->write_string(desc_);
-
-    // The Room's exits, if any.
-    for (unsigned int i = 0; i < 10; i++)
-        file->write_data<uint32_t>(exits_[i]);
 
     // Save any Entities in this Room.
+    file->write_data<uint32_t>(ROOM_DELTA_ENTITIES);
     file->write_data<size_t>(entities_.size());
     for (auto &entity : entities_)
         entity->save(file);

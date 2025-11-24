@@ -8,24 +8,53 @@
 #include "util/file/filereader.hpp"
 #include "util/file/filewriter.hpp"
 #include "world/entity/player.hpp"
+#include "world/area/room.hpp"
+
+using std::runtime_error;
+using std::to_string;
 
 namespace westgate {
 
 // Creates a blank Player, then loads its data from a FileReader.
 Player::Player(FileReader* file) : Mobile(file)
 {
+    region_ = 0;
     set_name("you");
-    region_ = room_ = 0;
     game().set_player(this);
 
     if (!file) return;
-    // load file data here
+
+    // Check the save version for this Player.
+    const uint32_t save_version = file->read_data<uint32_t>();
+    if (save_version != PLAYER_SAVE_VERSION)
+        throw runtime_error("Invalid player save version (" + to_string(save_version) + " (expected " + to_string(PLAYER_SAVE_VERSION) + ")");
 }
 
 // Saves this Player to a save game file.
-void Player::save(FileWriter* file) { Mobile::save(file); }
+void Player::save(FileWriter* file)
+{
+    Mobile::save(file);
+    file->write_data<uint32_t>(PLAYER_SAVE_VERSION);
+}
 
 // A shortcut instead of using game().player()
 Player& player() { return game().player(); }
+
+// Checks what Region the Player is currently in.
+uint32_t Player::region() const { return region_; }
+
+// This is a big no-no. We're overriding this method for safety reasons.
+void Player::set_parent_entity(Entity* new_entity_parent)
+{
+    if (new_entity_parent) throw runtime_error("Attempt to set Player to non-null Entity parent!");
+    else parent_entity_ = nullptr;
+}
+
+// Sets a new Room as the parent of this Player.
+void Player::set_parent_room(Room* new_room_parent)
+{
+    Mobile::set_parent_room(new_room_parent);
+    region_ = new_room_parent->region();
+}
 
 }   // namespace westgate

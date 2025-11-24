@@ -32,8 +32,8 @@ public:
     virtual void        save(FileWriter* file); // Saves this Entity to a save game file.
     void                set_gender(Gender new_gender);  // Sets the gender of this Entity.
     void                set_name(const std::string& new_name);  // Sets the name of this Entity.
-    void                set_parent_entity(Entity* new_entity_parent = nullptr); // Sets a new Entity as the parent of this Entity, or nullptr for none.
-    void                set_parent_room(Room* new_room_parent = nullptr);       // Sets a new Room as the parent of this Entity, or nullptr for none.
+    virtual void        set_parent_entity(Entity* new_entity_parent = nullptr); // Sets a new Entity as the parent of this Entity, or nullptr for none.
+    virtual void        set_parent_room(Room* new_room_parent = nullptr);       // Sets a new Room as the parent of this Entity, or nullptr for none.
     virtual EntityType  type() const { return EntityType::ENTITY; } // Self-identifies this Entity's derived class.
 
 protected:
@@ -43,7 +43,7 @@ protected:
     Room*       parent_room_;   // The Room (if any) where this Entity is located.
 
 private:
-    static constexpr uint32_t   ENTITY_SAVE_VERSION =   1;  // The expected version for saving/loading binary game data.
+    static constexpr uint32_t   ENTITY_SAVE_VERSION =   2;  // The expected version for saving/loading binary game data.
 };
 
 }   // namespace westgate

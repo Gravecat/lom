@@ -22,22 +22,17 @@ using std::make_unique;
 using std::runtime_error;
 using std::string;
 using std::to_string;
-using std::unique_ptr;
-using std::vector;
 using westgate::terminal::print;
 namespace fs = std::filesystem;
 
 namespace westgate {
 
 // Constructor, sets up the game manager.
-Game::Game() : player_ptr_(nullptr), region_ptr_(nullptr), save_id_(-1), world_ptr_(nullptr) { }
+Game::Game() : player_ptr_(nullptr), save_id_(-1), world_ptr_(nullptr) { }
 
 // Destructor, cleans up attached classes.
 Game::~Game()
-{
-    world_ptr_.reset(nullptr);
-    region_ptr_.reset(nullptr);
-}
+{ world_ptr_.reset(nullptr); }
 
 // Starts the game, in the form of a title screen followed by the main game loop.
 void Game::begin()
@@ -56,42 +51,6 @@ World& Game::world() const
     return *world_ptr_;
 }
 
-// Loads the static YAML data and generates a binary save file for the game world.
-void Game::create_world()
-{
-    // This can be replaced with something better later.
-    print("{c}Generating game world from static data...");
-
-    // Create a game saves folder, if one doesn't already exist.
-    const fs::path userdata_saves_path = BinPath::game_path("userdata/saves");
-    if (!fs::is_directory(userdata_saves_path)) fs::create_directory(userdata_saves_path);
-
-    // Right now, we're hard-coding save slot 0. Later in development, we'll let the user choose multiple save slots.
-    save_id_ = 0;
-
-    // This early in development, we're gonna just delete the save folder each time. It'll become more permanent later.
-    const fs::path save_dir = BinPath::merge_paths(userdata_saves_path.string(), to_string(save_id_));
-    fs::remove_all(save_dir);
-    fs::create_directory(save_dir);
-
-    // Determine how many region files are in the game's data files.
-    const fs::path regions_folder = core().datafile("world/regions");
-    vector<fs::path> regions;
-    for (const auto& file : fs::directory_iterator(regions_folder))
-        if (file.is_regular_file()) regions.push_back(file.path().filename());
-
-    // One at a time, load each region into memory.
-    for (size_t i = 0; i < regions.size(); i++)
-    {
-        print("{c}Processing region file {C}" + to_string(i + 1) + " {c}of {C}" + to_string(regions.size()) + "{c}...");
-        fs::path region_file = regions.at(i);
-        unique_ptr<Region> new_region = make_unique<Region>();
-        new_region->load_from_gamedata(region_file.string());
-        new_region->save(save_id_);
-    }
-    print("{c}World generation complete!");
-}
-
 // Shuts things down cleanly and exits the game.
 void Game::leave_game() { core().destroy_core(EXIT_SUCCESS); }
 
@@ -107,7 +66,7 @@ void Game::load_game(int save_slot)
     }
 
     // Load the metadata file.
-    const fs::path meta_path = BinPath::merge_paths(save_path.string(), "meta.dat");
+    const fs::path meta_path = BinPath::merge_paths(save_path.string(), "meta.wg");
     if (!fs::exists(meta_path)) throw runtime_error("Could not locate saved game metadata!");
     auto file = make_unique<FileReader>(meta_path.string());
 
@@ -118,17 +77,15 @@ void Game::load_game(int save_slot)
         to_string(METADATA_SAVE_VERSION) + ")");
     if (file->read_string() != "METADATA") throw runtime_error("Invalid metadata header!");
 
-    // Check the currently-loaded Region.
+    // Check what Region the player is in.
     const uint32_t current_region = file->read_data<uint32_t>();
 
     // Finally, check the footer before closing the file.
     if (!file->check_footer()) throw runtime_error("Invalid metadata footer!");
     file.reset(nullptr);
 
-    auto new_region = make_unique<Region>();
-    new_region->load_from_save(save_slot, current_region);
-    if (!player_ptr_) throw runtime_error("Could not locate player character in saved region!");
-    region_ptr_ = std::move(new_region);
+    // Load the Region that contains the Player object.
+    world_ptr_->load_region(current_region);
 
     print("{Y}Saved game loaded successfully!");
 }
@@ -139,15 +96,12 @@ void Game::main_loop() { while(true) { parser::process_input(terminal::get_input
 // Sets up for a new game!
 void Game::new_game(const uint32_t starting_region, const string& starting_room)
 {
-    create_world(); // In the beginning, there was darkness.
-
-    // Create a new Region in memory, then load it from disk.
-    region_ptr_ = make_unique<Region>();
-    region_ptr_->load_from_save(save_id_, starting_region);
+    // Create the new region delta save files.
+    world_ptr_->create_region_saves(save_id_);
 
     // Create the player character, assign them to a starting room, then transfer ownership.
     auto player = make_unique<Player>(nullptr);
-    Room* start_room = region_ptr_->find_room(starting_room);
+    Room* start_room = world_ptr_->find_room(starting_room, starting_region);
     start_room->add_entity(std::move(player));
 
     // Save the game silently, to store the player character.
@@ -157,27 +111,19 @@ void Game::new_game(const uint32_t starting_region, const string& starting_room)
 // Returns a reference to the Player object.
 Player& Game::player() const { return *player_ptr_; }
 
-// Returns a pointer to the currently-loaded Region, or nullptr if none is loaded.
-Region* Game::region() const { return region_ptr_.get(); }
-
 // Save the game, if there's a game in progress.
 void Game::save(bool chatty)
 {
-    if (!region_ptr_)
-    {
-        if (chatty) print("{R}There is no game in progress!");
-        return;
-    }
     if (chatty) print("{B}Saving the game...", false);
+    world_ptr_->save(save_id_);
     save_metadata();
-    region_ptr_->save(save_id_);
     if (chatty) print(" Done!");
 }
 
 // Saves a metadata save file, which contains basic info like the current region and save file version.
 void Game::save_metadata()
 {
-    const fs::path save_path = BinPath::game_path("userdata/saves/" + to_string(save_id_) + "/meta.dat");
+    const fs::path save_path = BinPath::game_path("userdata/saves/" + to_string(save_id_) + "/meta.wg");
     if (fs::exists(save_path)) fs::remove(save_path);
     auto file = make_unique<FileWriter>(save_path.string());
 
@@ -186,12 +132,15 @@ void Game::save_metadata()
     file->write_data<uint32_t>(METADATA_SAVE_VERSION);
     file->write_string("METADATA");
 
-    // The only other thing to write for now is the region's ID.
-    file->write_data<uint32_t>(region_ptr_->id());
+    // The only other thing to write for now is the player's region ID.
+    file->write_data<uint32_t>(player_ptr_->region());
 
     // And the EOF footer, of course.
     file->write_footer();
 }
+
+// Returns the currently-used saved game slot.
+int Game::save_slot() const { return save_id_; }
 
 // Sets the Player pointer. Use with caution.
 void Game::set_player(Player* player_ptr)
@@ -210,6 +159,9 @@ void Game::title_screen()
     print("{K}[{G}1{K}] {w}Start a new game");
     print("{K}[{G}2{K}] {w}Load a saved game");
     print("{K}[{G}3{K}] {w}Quit the game");
+
+    // Right now, we're hard-coding save slot 0. Later, we'll let the user pick a save slot.
+    save_id_ = 0;
 
     switch(terminal::get_number(1, 3))
     {
