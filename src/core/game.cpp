@@ -15,8 +15,8 @@
 #include "util/file/filereader.hpp"
 #include "util/file/filewriter.hpp"
 #include "world/area/region.hpp"
-#include "world/codex.hpp"
 #include "world/entity/player.hpp"
+#include "world/world.hpp"
 
 using std::make_unique;
 using std::runtime_error;
@@ -30,30 +30,30 @@ namespace fs = std::filesystem;
 namespace westgate {
 
 // Constructor, sets up the game manager.
-Game::Game() : codex_ptr_(nullptr), player_ptr_(nullptr), region_ptr_(nullptr), save_id_(-1) { }
+Game::Game() : player_ptr_(nullptr), region_ptr_(nullptr), save_id_(-1), world_ptr_(nullptr) { }
 
 // Destructor, cleans up attached classes.
 Game::~Game()
 {
-    codex_ptr_.reset(nullptr);
+    world_ptr_.reset(nullptr);
     region_ptr_.reset(nullptr);
 }
 
 // Starts the game, in the form of a title screen followed by the main game loop.
 void Game::begin()
 {
-    codex_ptr_ = make_unique<Codex>();
+    world_ptr_ = make_unique<World>();
     title_screen();
     print();
     player_ptr_->parent_room()->look();
     main_loop();
 }
 
-// Returns a reference to the Codex object.
-Codex& Game::codex() const
+// Returns a reference to the World object.
+World& Game::world() const
 {
-    if (!codex_ptr_) throw runtime_error("Attempt to access null Codex pointer!");
-    return *codex_ptr_;
+    if (!world_ptr_) throw runtime_error("Attempt to access null World pointer!");
+    return *world_ptr_;
 }
 
 // Loads the static YAML data and generates a binary save file for the game world.

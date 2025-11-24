@@ -31,10 +31,10 @@ set(WESTGATE_CPPS
   src/util/text/stringutils.cpp
   src/world/area/region.cpp
   src/world/area/room.cpp
-  src/world/codex.cpp
   src/world/entity/entity.cpp
   src/world/entity/mobile.cpp
   src/world/entity/player.cpp
+  src/world/world.cpp
 )
 
 # Third-party code being built as separate object files.
