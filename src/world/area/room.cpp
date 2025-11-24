@@ -19,6 +19,7 @@
 #include "world/entity/player.hpp"
 #include "world/world.hpp"
 
+using std::list;
 using std::make_unique;
 using std::runtime_error;
 using std::string;
@@ -50,6 +51,22 @@ void Room::add_entity(unique_ptr<Entity> entity)
 {
     entity->set_parent_room(this);
     entities_.push_back(std::move(entity));
+}
+
+// Clears a RoomTag from this Room.
+void Room::clear_tag(RoomTag the_tag, bool mark_delta)
+{
+    if (!(tags_.count(the_tag) > 0)) return;
+    tags_.erase(the_tag);
+    if (mark_delta) set_tag(RoomTag::ChangedTags, false);
+}
+
+// Clears multiple RoomTags at the same time.
+void Room::clear_tags(list<RoomTag> tags_list, bool mark_delta)
+{
+    for (auto the_tag : tags_list)
+        clear_tag(the_tag);
+    if (mark_delta) set_tag(RoomTag::ChangedTags, false);
 }
 
 // Retrieves the description of this Room.
@@ -89,23 +106,68 @@ const std::string& Room::id_str() const { return id_str_; }
 // Loads only the changes to this Room from a save file. Should only be called by a parent Region.
 void Room::load_delta(FileReader* file)
 {
-    // Load any Entities in this Room.
-    const uint32_t entity_tag = file->read_data<uint32_t>();
-    if (entity_tag != ROOM_DELTA_ENTITIES) FileReader::standard_error("Invalid delta tag in room data", entity_tag, ROOM_DELTA_ENTITIES, {id_str_});
-
-    const size_t entity_count = file->read_data<size_t>();
-    entities_.reserve(entity_count);
-    for (size_t i = 0; i < entity_count; i++)
+    uint32_t delta_tag = 0;
+    do
     {
-        EntityType type = file->read_data<EntityType>();
-        switch(type)
+        delta_tag = file->read_data<uint32_t>();
+        switch(delta_tag)
         {
-            case EntityType::ENTITY: add_entity(make_unique<Entity>(file)); break;
-            case EntityType::MOBILE: add_entity(make_unique<Mobile>(file)); break;
-            case EntityType::PLAYER: add_entity(make_unique<Player>(file)); break;
-            default: throw runtime_error("Attempt to load unknown entity type: " + to_string(static_cast<int>(type)));
+            case ROOM_DELTA_ENTITIES:
+            {
+                // Load any Entities in this Room.
+                const size_t entity_count = file->read_data<size_t>();
+                entities_.reserve(entity_count);
+                for (size_t i = 0; i < entity_count; i++)
+                {
+                    EntityType type = file->read_data<EntityType>();
+                    switch(type)
+                    {
+                        case EntityType::ENTITY: add_entity(make_unique<Entity>(file)); break;
+                        case EntityType::MOBILE: add_entity(make_unique<Mobile>(file)); break;
+                        case EntityType::PLAYER: add_entity(make_unique<Player>(file)); break;
+                        default: throw runtime_error("Attempt to load unknown entity type: " + to_string(static_cast<int>(type)));
+                    }
+                }
+                break;
+            }
+
+            case ROOM_DELTA_TAGS:
+            {
+                // Clear all existing tags, and load the full set of tags in from the save file.
+                tags_.clear();
+                size_t tag_count = file->read_data<size_t>();
+                for (size_t i = 0; i < tag_count; i++)
+                    set_tag(file->read_data<RoomTag>(), false);
+                break;
+            }
+
+            case ROOM_DELTA_DESC:
+            {
+                // Update the room description.
+                desc_ = file->read_string();
+                break;
+            }
+
+            case ROOM_DELTA_EXITS:
+            {
+                // Clear the existing room exits, replace them with the save file data.
+                for (int i = 0; i < 10; i++)
+                    exits_[i] = file->read_data<uint32_t>();
+                break;
+            }
+
+            case ROOM_DELTA_NAME:
+            {
+                // Replace the room name with the save file data.
+                name_[0] = file->read_string();
+                name_[1] = file->read_string();
+                break;
+            }
+
+            case ROOM_DELTA_END: break;
+            default: FileReader::standard_error("Unrecognized delta tag in room data", delta_tag, 0, {id_str_});
         }
-    }
+    } while(delta_tag != ROOM_DELTA_END);
 }
 
 // Look around you. Just look around you.
@@ -134,9 +196,13 @@ uint32_t Room::region() const
 // Saves only the changes to this Room in a save file. Should only be called by a parent Region.
 void Room::save_delta(FileWriter* file)
 {
-    // Right now, we're not saving any Room data *except* for Entities.
-    bool changes = (entities_.size() > 0);
-    if (!changes) return;
+    // Check if anything has changed on this Room.
+    const bool entities_exist = (entities_.size() > 0);
+    const bool tags_changed = tag(RoomTag::ChangedTags);
+    const bool desc_changed = tag(RoomTag::ChangedDesc);
+    const bool exits_changed = tag(RoomTag::ChangedExits);
+    const bool name_changed = tag(RoomTag::ChangedName);
+    if (!(entities_exist || tags_changed || desc_changed || exits_changed || name_changed)) return;
 
     // Write the save version for this Room, and the Room's ID.
     file->write_data<uint32_t>(Region::REGION_DELTA_ROOM);
@@ -144,17 +210,54 @@ void Room::save_delta(FileWriter* file)
     file->write_data<uint32_t>(id_);
 
     // Save any Entities in this Room.
-    file->write_data<uint32_t>(ROOM_DELTA_ENTITIES);
-    file->write_data<size_t>(entities_.size());
-    for (auto &entity : entities_)
-        entity->save(file);
+    if (entities_exist)
+    {
+        file->write_data<uint32_t>(ROOM_DELTA_ENTITIES);
+        file->write_data<size_t>(entities_.size());
+        for (auto &entity : entities_)
+            entity->save(file);
+    }
+
+    // If any tags have changed, write them all here.
+    if (tags_changed)
+    {
+        file->write_data<uint32_t>(ROOM_DELTA_TAGS);
+        file->write_data<size_t>(tags_.size());
+        for (auto &tag : tags_)
+            file->write_data<RoomTag>(tag);
+    }
+
+    // If the room description has changed, add it here.
+    if (desc_changed)
+    {
+        file->write_data<uint32_t>(ROOM_DELTA_DESC);
+        file->write_string(desc_);
+    }
+
+    // If any of the exits have changed, add them here.
+    if (exits_changed)
+    {
+        file->write_data<uint32_t>(ROOM_DELTA_EXITS);
+        for (int i = 0; i < 10; i++)
+            file->write_data<uint32_t>(exits_[i]);
+    }
+
+    // If the room name has changed, add it here.
+    if (name_changed)
+    {
+        file->write_data<uint32_t>(ROOM_DELTA_NAME);
+        file->write_string(name_[0]);
+        file->write_string(name_[1]);
+    }
+
+    // Mark the end of the changes.
+    file->write_data<uint32_t>(ROOM_DELTA_END);
 }
 
 // Sets the description of this Room.
 void Room::set_desc(const string& new_desc, bool mark_delta)
 {
-    (void)mark_delta;   // We'll use this later.
-
+    if (mark_delta) set_tag(RoomTag::ChangedDesc);
     if (!new_desc.size())
     {
         core().nonfatal("Attempt to set blank description on room (" + id_str_ + ")", Core::CORE_ERROR);
@@ -166,8 +269,7 @@ void Room::set_desc(const string& new_desc, bool mark_delta)
 // Sets an exit link from this Room to another.
 void Room::set_exit(Direction dir, uint32_t new_exit, bool mark_delta)
 {
-    (void)mark_delta;   // We'll use this later.
-
+    if (mark_delta) set_tag(RoomTag::ChangedExits);
     if (dir == Direction::NONE || dir > Direction::DOWN) throw std::runtime_error("Invalid direction on set_exit call (" + id_str_ + ")");
     exits_[static_cast<uint8_t>(dir) - 1] = new_exit;
 }
@@ -175,8 +277,7 @@ void Room::set_exit(Direction dir, uint32_t new_exit, bool mark_delta)
 // Sets the name of this Room.
 void Room::set_name(const string& new_full_name, const string& new_short_name, bool mark_delta)
 {
-    (void)mark_delta;   // We'll use this later.
-
+    if (mark_delta) set_tag(RoomTag::ChangedName);
     if (!new_full_name.size() || !new_short_name.size())
     {
         core().nonfatal("Attempt to set blank name on room.", Core::CORE_ERROR);
@@ -189,6 +290,25 @@ void Room::set_name(const string& new_full_name, const string& new_short_name, b
         name_[1] = new_short_name;
     }
 }
+
+// Sets a RoomTag on this Room.
+void Room::set_tag(RoomTag the_tag, bool mark_delta)
+{
+    if (tags_.count(the_tag) > 0) return;
+    tags_.insert(the_tag);
+    if (mark_delta) set_tag(RoomTag::ChangedTags, false);
+}
+
+// Sets multiple RoomTags at the same time.
+void Room::set_tags(list<RoomTag> tags_list, bool mark_delta)
+{
+    for (auto the_tag : tags_list)
+        set_tag(the_tag);
+    if (mark_delta) set_tag(RoomTag::ChangedTags, false);
+}
+
+// Checks if a RoomTag is set on this Room.
+bool Room::tag(RoomTag the_tag) const { return (tags_.count(the_tag) > 0); }
 
 // Transfers a specified Entity from this Room to a target Room.
 void Room::transfer(Entity* entity_ptr, Room* room_ptr)
