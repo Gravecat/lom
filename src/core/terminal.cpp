@@ -22,6 +22,7 @@
 #include "3rdparty/rang/rang.hpp"
 #include "core/core.hpp"
 #include "core/terminal.hpp"
+#include "util/text/stringutils.hpp"
 
 using std::cout;
 using std::string;
@@ -68,8 +69,8 @@ const string get_input()
     return input;
 }
 
-// As with get_input(), but requires the user to enter an integer number.
-int get_number(int lowest, int highest)
+// As with get_input(), but requires the user to enter an integer number. If yes_no is true, it allows yes/no to translate to 1/0.
+int get_number(int lowest, int highest, bool yes_no)
 {
     int result = 0;
     string input;
@@ -77,6 +78,12 @@ int get_number(int lowest, int highest)
     {
         input = get_input();
         if (!input.size()) continue;
+
+        if (yes_no)
+        {
+            if (input[0] == 'y' || input[0] == 'Y') return 1;
+            else if (input[0] == 'n' || input[0] == 'N') return 0;
+        }
 
         try { result = std::stol(input); }
         catch(const std::invalid_argument&)

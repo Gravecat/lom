@@ -59,7 +59,7 @@ bool yes_no()
     print("Please select one of the following options:");
     print("{K}[{G}0{K}] {w}No");
     print("{K}[{G}1{K}] {w}Yes");
-    return (terminal::get_number(0, 1) == 1);
+    return (terminal::get_number(0, 1, true) == 1);
 }
 
 } } // parser, westgate namespaces
