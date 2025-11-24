@@ -10,8 +10,8 @@
 namespace westgate {
 namespace stringutils {
 
-constexpr uint8_t CL_MODE_USE_AND = 1;  // Use 'and' for the last entry in comma_list().
-constexpr uint8_t CL_MODE_USE_OR =  2;  // Use 'or' for the last entry in comma_list();
+static constexpr uint8_t CL_MODE_USE_AND = 1;   // Use 'and' for the last entry in comma_list().
+static constexpr uint8_t CL_MODE_USE_OR =  2;   // Use 'or' for the last entry in comma_list();
 
 std::string comma_list(std::vector<std::string> vec, uint8_t mode = 0);    // Converts a vector to a comma-separated list.
 std::string str_tolower(std::string str);   // Converts a string to lower-case.

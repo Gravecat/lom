@@ -20,6 +20,7 @@ Player::Player(FileReader* file) : Mobile(file)
 {
     region_ = 0;
     set_name("you");
+    set_tag(EntityTag::ProperNoun);
     game().set_player(this);
 
     if (!file) return;

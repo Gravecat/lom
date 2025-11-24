@@ -5,12 +5,15 @@
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#include <cctype>
+
 #include "core/core.hpp"
 #include "util/file/filereader.hpp"
 #include "util/file/filewriter.hpp"
 #include "world/area/room.hpp"
 #include "world/entity/entity.hpp"
 
+using std::list;
 using std::runtime_error;
 using std::string;
 using std::to_string;
@@ -28,15 +31,102 @@ Entity::Entity(FileReader* file) : gender_(Gender::NONE), name_("undefined entit
         throw runtime_error("Invalid entity save version (" + to_string(save_version) + " (expected " + to_string(ENTITY_SAVE_VERSION) + ")");
 
     // Retrieve the Entity's name and gender.
+    const uint32_t props_tag = file->read_data<uint32_t>();
+    if (props_tag != ENTITY_SAVE_PROPS) throw std::runtime_error("Invalid tag in entity save data (" + to_string(props_tag) + ", expected " +
+        to_string(ENTITY_SAVE_PROPS) + ")");
     name_ = file->read_string();
     gender_ = file->read_data<Gender>();
+
+    // Load the Entity's tags, if any.
+    const uint32_t tags_tag = file->read_data<uint32_t>();
+    if (tags_tag != ENTITY_SAVE_TAGS) throw std::runtime_error("Invalid tag in entity save data (" + to_string(tags_tag) + ", expected " +
+        to_string(ENTITY_SAVE_TAGS) + ")");
+    size_t tag_count = file->read_data<size_t>();
+    for (size_t t = 0; t < tag_count; t++)
+        set_tag(file->read_data<EntityTag>());
 }
+
+// Clears an EntityTag from this Entity.
+void Entity::clear_tag(EntityTag the_tag)
+{
+    if (!(tags_.count(the_tag) > 0)) return;
+    tags_.erase(the_tag);
+}
+
+// Clears multiple EntityTags at the same time.
+void Entity::clear_tags(list<EntityTag> tags_list) { for (auto the_tag : tags_list) clear_tag(the_tag); }
 
 // Retrieves the gender (if any) of this Entity.
 Gender Entity::gender() const { return gender_; }
 
+// Returns a gender string (he/she/it/they/etc.)
+const string Entity::he_she(bool capitalize_first) const
+{
+    switch(gender_)
+    {
+        case Gender::SHE: return (capitalize_first ? "She" : "she");
+        case Gender::HE: return (capitalize_first ? "He" : "he");
+        case Gender::IT: return (capitalize_first ? "It" : "it");
+        case Gender::THEY: return (capitalize_first ? "They" : "they");
+        default: return (capitalize_first ? "It" : "it");
+    }
+}
+
+// Returns a gender string (himself/herself/theirself/etc.)
+const string Entity::himself_herself() const
+{
+    switch(gender_)
+    {
+        case Gender::SHE: return "herself";
+        case Gender::HE: return "himself";
+        case Gender::IT: return "itself";
+        case Gender::THEY: return "theirself";
+        default: return "itself";
+    }
+}
+
+// Returns a gender string (his/her/its/their/etc.)
+const string Entity::his_her() const
+{
+    switch(gender_)
+    {
+        case Gender::SHE: return "her";
+        case Gender::HE: return "his";
+        case Gender::IT: return "its";
+        case Gender::THEY: return "their";
+        default: return "its";
+    }
+}
+
 // Retrieves the name of this Entity.
-const string& Entity::name() const { return name_; }
+const string Entity::name(uint32_t flags) const
+{
+    const bool the = ((flags & NAME_FLAG_THE) == NAME_FLAG_THE);
+    const bool capitalize_first = ((flags & NAME_FLAG_CAPITALIZE_FIRST) == NAME_FLAG_CAPITALIZE_FIRST);
+    const bool possessive = ((flags & NAME_FLAG_POSSESSIVE) == NAME_FLAG_POSSESSIVE);
+    const bool plural = ((flags & NAME_FLAG_PLURAL) == NAME_FLAG_PLURAL);
+
+    string ret = name_;
+    if (!ret.size())
+    {
+        core().nonfatal("Missing mobile name!", Core::CORE_ERROR);
+        return "";
+    }
+    if (the && !tag(EntityTag::ProperNoun)) ret = "the " + name_;
+    if (capitalize_first) ret[0] = std::toupper(ret[0]);
+    if (possessive)
+    {
+        if (ret.back() == 's') ret += "'";
+        else ret += "'s";
+    }
+    else if (plural && ret.back() != 's')
+    {
+        if (ret.back() == 'h') ret += "es";
+        else ret += "s";
+    }
+
+    return ret;
+}
 
 // Retrieves the Entity (if any) containing this Entity.
 Entity* Entity::parent_entity() const { return parent_entity_; }
@@ -54,8 +144,15 @@ void Entity::save(FileWriter* file)
     file->write_data<uint32_t>(ENTITY_SAVE_VERSION);
 
     // Write the Entity's name and gender.
+    file->write_data<uint32_t>(ENTITY_SAVE_PROPS);
     file->write_string(name_);
     file->write_data<Gender>(gender_);
+
+    // Write the Entity's tags, if any.
+    file->write_data<uint32_t>(ENTITY_SAVE_TAGS);
+    file->write_data<size_t>(tags_.size());
+    for (auto &tag : tags_)
+        file->write_data<EntityTag>(tag);
 }
 
 // Sets the gender of this Entity.
@@ -90,6 +187,26 @@ void Entity::set_parent_room(Room* new_room_parent)
 {
     parent_room_ = new_room_parent;
     if (new_room_parent) set_parent_entity(nullptr);    // An Entity can only have one parent.
+}
+
+// Sets an EntityTag on this Entity.
+void Entity::set_tag(EntityTag the_tag)
+{
+    if (tags_.count(the_tag) > 0) return;
+    tags_.insert(the_tag);
+}
+
+// Sets multiple EntityTags at the same time.
+void Entity::set_tags(list<EntityTag> tags_list) { for (auto the_tag : tags_list) set_tag(the_tag); }
+
+// Checks if an EntityTag is set on this Entity.
+bool Entity::tag(EntityTag the_tag) const { return (tags_.count(the_tag) > 0); }
+
+// Toggles an EntityTag on or off.
+void Entity::toggle_tag(EntityTag the_tag)
+{
+    if (!tag(the_tag)) set_tag(the_tag);
+    else clear_tag(the_tag);
 }
 
 }   // namespace westgate
