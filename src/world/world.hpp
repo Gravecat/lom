@@ -24,6 +24,7 @@ public:
     void            create_region_saves(int save_slot); // Loads region data from YAML, and saves it as a new save file in the specified slot.
     Room*           find_room(const std::string& id, uint32_t region_id);   // Attempts to find a room by its string ID.
     Room*           find_room(uint32_t id, uint32_t region_id);             // Attempts to find a room by its hashed ID.
+    Room*           find_room(uint32_t id);     // As above, but doesn't specify Region ID. This is more computationally expensive.
     uint32_t        find_room_region(uint32_t id) const;    // Attempts to find the Region that a specified Room belongs to.
     Region*         load_region(uint32_t id);   // Specifies a Region to be loaded into memory.
     ProcNameGen&    namegen() const;        // Returns a reference to the procedural name generator object.

@@ -88,6 +88,10 @@ Room* World::find_room(uint32_t id, uint32_t region_id)
     return region->second->find_room(id);
 }
 
+// As above, but doesn't specify Region ID. This is more computationally expensive.
+Room* World::find_room(uint32_t id)
+{ return find_room(id, find_room_region(id)); }
+
 // Attempts to find the Region that a specified Room belongs to.
 uint32_t World::find_room_region(uint32_t id) const
 {

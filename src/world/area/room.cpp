@@ -47,10 +47,6 @@ const string& Room::desc() const { return desc_; }
 // Gets the Room linked in the specified direction, or nullptr if none is linked.
 Room* Room::get_link(Direction dir)
 {
-    // todo: fix this for new region system
-    (void)dir;
-    return nullptr;
-    /*
     const uint8_t array_pos = static_cast<uint8_t>(dir) - 1;
     if (array_pos >= 10)
     {
@@ -58,8 +54,7 @@ Room* Room::get_link(Direction dir)
         return nullptr;
     }
     if (!exits_[array_pos]) return nullptr;
-    return game().region()->find_room(exits_[array_pos]);
-    */
+    return world().find_room(exits_[array_pos]);
 }
 
 // Retrieves the hashed ID of this Room.
