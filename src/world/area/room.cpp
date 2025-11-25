@@ -39,7 +39,7 @@ map<Direction, string> Room::direction_names_ = {
 };
 
 // Creates a blank Room with default values and no ID.
-Room::Room() : desc_("Missing room description."), exits_{}, id_(0), name_{"Undefined Room", "undefined"} { }
+Room::Room() : coords_{0,0,-10000}, desc_("Missing room description."), exits_{}, id_(0), name_{"Undefined Room", "undefined"} { }
 
 // Creates a Room with a specified ID.
 Room::Room(const string& new_id) : Room()
@@ -69,6 +69,13 @@ void Room::clear_tags(list<RoomTag> tags_list, bool mark_delta)
     for (auto the_tag : tags_list)
         clear_tag(the_tag);
     if (mark_delta) set_tag(RoomTag::ChangedTags, false);
+}
+
+// Retrieves the coordinates of this Room.
+const Vector3 Room::coords() const
+{
+    if (coords_ == Vector3(0,0,-10000)) throw runtime_error("Coordinates of room were never set! [" + id_str_ + "]");
+    return coords_;
 }
 
 // Retrieves the description of this Room.
@@ -258,6 +265,13 @@ void Room::save_delta(FileWriter* file)
 
     // Mark the end of the changes.
     file->write_data<uint32_t>(ROOM_DELTA_END);
+}
+
+// Sets the coordinates of this room. Does not affect delta, as this should only ever be done when loading YAML.
+void Room::set_coords(Vector3 new_coords)
+{
+    if (coords_ != Vector3(0,0,-10000)) throw runtime_error("Attempt to set coords of a room a second time! [" + id_str_ + "]");
+    coords_ = new_coords;
 }
 
 // Sets the description of this Room.

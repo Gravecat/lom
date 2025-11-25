@@ -21,7 +21,9 @@
 
 using std::invalid_argument;
 using std::make_unique;
+using std::out_of_range;
 using std::runtime_error;
+using std::stol;
 using std::stoul;
 using std::string;
 using std::to_string;
@@ -166,11 +168,27 @@ void Region::load_from_gamedata(const string& filename, bool update_world)
         if (!room_yaml.key_exists("name")) throw runtime_error(error_str + "Missing name data.");
         if (!room_yaml.get_child("name").is_seq()) throw runtime_error(error_str + "Name data not correctly set (expected sequence).");
         const vector<string> name_vec = room_yaml.get_seq("name");
-        if (name_vec.size() != 2) FileReader::standard_error("Name data sequence length incorrect", 2, name_vec.size());
+        if (name_vec.size() != 2) FileReader::standard_error("Name data sequence length incorrect", 2, name_vec.size(), {key});
         room_ptr->set_name(name_vec.at(0), name_vec.at(1), false);
 
         if (!room_yaml.key_exists("desc")) throw runtime_error(error_str + "Missing room description.");
         room_ptr->set_desc(stringutils::strip_trailing_newlines(room_yaml.val("desc")), false);
+
+        if (!room_yaml.key_exists("coords")) throw runtime_error(error_str + "Missing room coordinates.");
+        if (!room_yaml.get_child("coords").is_seq()) throw runtime_error(error_str + "Coordinate data not correctly set (expected sequence).");
+        const vector<string> coord_vec = room_yaml.get_seq("coords");
+        if (coord_vec.size() != 3) FileReader::standard_error("Coord data sequence length incorrect", 3, coord_vec.size(), {key});
+        vector<int32_t> coord_int_vec(3);
+        for (int i = 0; i < 3; i++)
+        {
+            try
+            { coord_int_vec.at(i) = stol(coord_vec.at(i));}
+            catch(const invalid_argument&)
+            { throw runtime_error(error_str + "Coordinate data could not be processed (not a number?)"); }
+            catch(const out_of_range&)
+            { throw runtime_error(error_str + "Coordinate data could not be processed (out of range?)"); }
+        }
+        room_ptr->set_coords(Vector3(coord_int_vec.at(0), coord_int_vec.at(1), coord_int_vec.at(2)));
 
         // If the Room has any exits, process them here.
         if (room_yaml.key_exists("exits"))
