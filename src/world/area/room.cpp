@@ -21,16 +21,18 @@
 
 using std::list;
 using std::make_unique;
+using std::map;
 using std::runtime_error;
 using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::vector;
+using westgate::terminal::print;
 
 namespace westgate {
 
 // Static map that converts a Direction enum into string names.
-std::map<Direction, std::string> Room::direction_names_ = {
+map<Direction, string> Room::direction_names_ = {
     { Direction::NORTH, "north" }, { Direction::NORTHEAST, "northeast" }, { Direction::EAST, "east" }, { Direction::SOUTHEAST, "southeast" },
     { Direction::SOUTH, "south" }, { Direction::SOUTHWEST, "southwest"}, { Direction::WEST, "west" }, { Direction::NORTHWEST, "northwest "},
     { Direction::UP, "up" }, { Direction::DOWN, "down" }, { Direction::NONE, "" }
@@ -73,7 +75,7 @@ void Room::clear_tags(list<RoomTag> tags_list, bool mark_delta)
 const string& Room::desc() const { return desc_; }
 
 // Gets the string name of a Direction enum.
-const std::string& Room::direction_name(Direction dir)
+const string& Room::direction_name(Direction dir)
 {
     auto result = direction_names_.find(dir);
     if (result == direction_names_.end())
@@ -90,7 +92,7 @@ Room* Room::get_link(Direction dir)
     const uint8_t array_pos = static_cast<uint8_t>(dir) - 1;
     if (array_pos >= 10)
     {
-        core().nonfatal("Attempt to retrieve invalid room link on " + id_str_ + " (" + std::to_string(array_pos) + ")", Core::CORE_ERROR);
+        core().nonfatal("Attempt to retrieve invalid room link on " + id_str_ + " (" + to_string(array_pos) + ")", Core::CORE_ERROR);
         return nullptr;
     }
     if (!exits_[array_pos]) return nullptr;
@@ -101,7 +103,7 @@ Room* Room::get_link(Direction dir)
 uint32_t Room::id() const { return id_; }
 
 // Retrieves the string ID of this Room.
-const std::string& Room::id_str() const { return id_str_; }
+const string& Room::id_str() const { return id_str_; }
 
 // Loads only the changes to this Room from a save file. Should only be called by a parent Region.
 void Room::load_delta(FileReader* file)
@@ -173,20 +175,21 @@ void Room::load_delta(FileReader* file)
 // Look around you. Just look around you.
 void Room::look() const
 {
-    terminal::print("{C}" + name_[0]);
-    terminal::print("  " + desc_);
+    print("{C}" + name_[0]);
+    print("  " + desc_);
 
     vector<string> exits_list;
     for (int i = 0; i < 10; i++)
     {
         const uint32_t exit = exits_[i];
         if (!exit) continue;
-        std::string exit_name = direction_name(static_cast<Direction>(i + 1));
+        string exit_name = "{C}" + direction_name(static_cast<Direction>(i + 1)) + "{c}";
         const Room* target_room = world().find_room(exit);
-        if (target_room->tag(RoomTag::Explored)) exit_name += " {c}(" + target_room->name(false) + "){C}";
+        if (target_room->tag(RoomTag::Explored)) exit_name += " (" + target_room->name(false) + ")";
         exits_list.push_back(exit_name);
     }
-    if (exits_list.size()) terminal::print("\n{C}[Exits: " + stringutils::comma_list(exits_list, stringutils::CL_MODE_USE_AND) + "]");
+    if (exits_list.size()) print(string("{c}There ") + (exits_list.size() > 1 ? "are " : "is ") + stringutils::number_to_text(exits_list.size()) +
+        " obvious exit" + (exits_list.size() > 1 ? "s" : "") + ": " + stringutils::comma_list(exits_list, stringutils::CL_MODE_USE_AND) + ".");
 }
 
 // Retrieves the name of this Room.
@@ -273,7 +276,7 @@ void Room::set_desc(const string& new_desc, bool mark_delta)
 void Room::set_exit(Direction dir, uint32_t new_exit, bool mark_delta)
 {
     if (mark_delta) set_tag(RoomTag::ChangedExits);
-    if (dir == Direction::NONE || dir > Direction::DOWN) throw std::runtime_error("Invalid direction on set_exit call (" + id_str_ + ")");
+    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_exit call (" + id_str_ + ")");
     exits_[static_cast<uint8_t>(dir) - 1] = new_exit;
 }
 
