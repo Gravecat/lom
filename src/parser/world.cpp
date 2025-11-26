@@ -100,8 +100,8 @@ void travel(PARSER_FUNCTION)
     {
         if (!room_here->link_tag(dir, LinkTag::Open))
         {
-            print("{Y}You can't go that way, the " + room_here->door_name(dir) + " is closed.");
-            return;
+            print("{B}(first opening the " + room_here->door_name(dir) + ")");
+            westgate::world().open_close_no_checks(room_here, dir, true);
         }
     }
 
