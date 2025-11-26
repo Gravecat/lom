@@ -15,7 +15,7 @@ SULA_PLAINS:
     shack - more of a shed, really - while to the north is a grid of paved stones.
   exits:
     north: SULA_STONE_8
-    east: [ SULA_SHACK, Door, Openable, Open ]
+    east: [ SULA_SHACK, Door, Openable ]
   map: "{g}O"
   short_name: plains
   tags: [ AlwaysSpring ]
@@ -26,7 +26,7 @@ SULA_SHACK:
     The interior of this small wooden shack reveals it to be more of a shed than anything, various shelves attached to the walls holding miscellaneous
     bric-a-brac, while a few dusty barrels and crates occupy the east wide. The only door leads back outside, to the west.
   exits:
-    west: [ SULA_PLAINS, Door, Openable, Open ]
+    west: [ SULA_PLAINS, Door, Openable ]
   map: "O"
   short_name: shack
   tags: [ Indoors ]

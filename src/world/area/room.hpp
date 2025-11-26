@@ -61,6 +61,7 @@ public:
     void        clear_tags(std::list<RoomTag> tags_list, bool mark_delta = true);   // Clears multiple RoomTags at the same time.
     const Vector3   coords() const; // Retrieves the coordinates of this Room.
     const std::string&  desc() const;   // Retrieves the description of this Room.
+    const std::string   door_name(Direction dir) const; // Returns the name of the door (door, gate, etc.) on the specified Link, if any.
     Room*       get_link(Direction dir);    // Gets the Room linked in the specified direction, or nullptr if none is linked.
     uint32_t    id() const;     // Retrieves the hashed ID of this Room.
     const std::string&  id_str() const; // Retrieves the string ID of this Room.
@@ -101,6 +102,9 @@ private:
 
     static const std::map<Direction, std::string> direction_names_; // Static map that converts a Direction enum into string names.
     static const std::map<std::string, RoomTag> tag_map_;   // Used during loading YAML data, to convert RoomTag text names into RoomTag enums.
+
+    // Turns a Direction into an int for array access, produces a standard error on invalid input.
+    int link_id(Direction dir, const std::string& caller, bool fail_on_null = true) const;
 
     Vector3     coords_;        // The coordinates of this Room in the game world.
     std::string desc_;          // The text description of this Room, as shown to the player.

@@ -55,6 +55,15 @@ void travel(PARSER_FUNCTION)
         return;
     }
 
+    if (room_here->link_tag(dir, LinkTag::Openable))
+    {
+        if (!room_here->link_tag(dir, LinkTag::Open))
+        {
+            print("{Y}You can't go that way, the " + room_here->door_name(dir) + " is closed.");
+            return;
+        }
+    }
+
     print(string("You travel to ") + (dir == Direction::UP || dir == Direction::DOWN ? "" : "the ") + Room::direction_name(dir) + ".");
     room_here->transfer(&player(), room_target);
     westgate::world().time_weather().pass_time(timing::TIME_TO_MOVE);

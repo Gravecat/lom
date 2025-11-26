@@ -80,17 +80,15 @@ bool Room::can_see_outside() const
 // Clears a LinkTag on a specifieid Link.
 void Room::clear_link_tag(Direction dir, LinkTag tag, bool mark_delta)
 {
-    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on clear_link_tag call (" + id_str_ + ")");
-    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to clear link tag on missing link (" + id_str_ + ")");
-    links_[static_cast<int>(dir) - 1]->clear_tag(tag, mark_delta);
+    int array_pos = link_id(dir, "clear_link_tag", true);
+    links_[array_pos]->clear_tag(tag, mark_delta);
 }
 
 // Clears multiple LinkTags at once.
 void Room::clear_link_tags(Direction dir, std::list<LinkTag> tags_list, bool mark_delta)
 {
-    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on clear_link_tags call (" + id_str_ + ")");
-    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to clear link tags on missing link (" + id_str_ + ")");
-    links_[static_cast<int>(dir) - 1]->clear_tags(tags_list, mark_delta);
+    int array_pos = link_id(dir, "clear_link_tags", true);
+    links_[array_pos]->clear_tags(tags_list, mark_delta);
 }
 
 // Clears a RoomTag from this Room.
@@ -131,6 +129,14 @@ const string& Room::direction_name(Direction dir)
     return result->second;
 }
 
+// Returns the name of the door (door, gate, etc.) on the specified Link, if any.
+const std::string Room::door_name(Direction dir) const
+{
+    int array_pos = link_id(dir, "clear_link_tag", false);
+    if (!links_[array_pos]) return "";
+    else return links_[array_pos]->door_name();
+}
+
 // Gets the Room linked in the specified direction, or nullptr if none is linked.
 Room* Room::get_link(Direction dir)
 {
@@ -150,12 +156,20 @@ uint32_t Room::id() const { return id_; }
 // Retrieves the string ID of this Room.
 const string& Room::id_str() const { return id_str_; }
 
+// Turns a Direction into an int for array access, produces a standard error on invalid input.
+int Room::link_id(Direction dir, const std::string& caller, bool fail_on_null) const
+{
+    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction call from " + caller + " [" + id_str_ + "]");
+    int array_pos = static_cast<int>(dir) - 1;
+    if (fail_on_null && !links_[array_pos]) throw runtime_error("Null link direction call from " + caller + " [" + id_str_ + "]");
+    return array_pos;
+}
+
 // Checks a LinkTag on a specified Link.
 bool Room::link_tag(Direction dir, LinkTag tag) const
 {
-    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on link_tag call (" + id_str_ + ")");
-    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to check link tag on missing link (" + id_str_ + ")");
-    return links_[static_cast<int>(dir) - 1]->tag(tag);
+    int array_pos = link_id(dir, "link_tag", true);
+    return links_[array_pos]->tag(tag);
 }
 
 // Loads only the changes to this Room from a save file. Should only be called by a parent Region.
@@ -283,7 +297,16 @@ void Room::look() const
         const uint32_t exit = links_[i]->get();
         string exit_name = "{C}" + direction_name(static_cast<Direction>(i + 1)) + "{c}";
         const Room* target_room = world().find_room(exit);
-        if (target_room->tag(RoomTag::Explored)) exit_name += " (" + target_room->short_name() + ")";
+
+        vector<string> exit_tags;
+        if (target_room->tag(RoomTag::Explored)) exit_tags.push_back(target_room->short_name());
+        if (links_[i]->tag(LinkTag::Openable))
+        {
+            if (links_[i]->tag(LinkTag::Open)) exit_tags.push_back("open");
+            else exit_tags.push_back("closed");
+        }
+
+        if (exit_tags.size()) exit_name += " (" + stringutils::comma_list(exit_tags) + ")";
         exits_list.push_back(exit_name);
     }
     if (exits_list.size()) exits_list_str = string("{c}There ") + (exits_list.size() > 1 ? "are " : "is ") + stringutils::number_to_text(exits_list.size()) +
@@ -423,8 +446,7 @@ void Room::set_desc(const string& new_desc, bool mark_delta)
 // Sets an exit link from this Room to another.
 void Room::set_link(Direction dir, uint32_t new_exit, bool mark_delta)
 {
-    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_exit call (" + id_str_ + ")");
-    int array_pos = static_cast<int>(dir) - 1;
+    int array_pos = link_id(dir, "set_link", false);
     if (!links_[array_pos])
     {
         auto new_link = std::make_unique<Link>();
@@ -438,17 +460,15 @@ void Room::set_link(Direction dir, uint32_t new_exit, bool mark_delta)
 // Sets a LinkTag on a specifieid Link.
 void Room::set_link_tag(Direction dir, LinkTag tag, bool mark_delta)
 {
-    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_link_tag call (" + id_str_ + ")");
-    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to set link tag on missing link (" + id_str_ + ")");
-    links_[static_cast<int>(dir) - 1]->set_tag(tag, mark_delta);
+    int array_pos = link_id(dir, "set_link_tag", true);
+    links_[array_pos]->set_tag(tag, mark_delta);
 }
 
 // Sets multiple LinkTags at once.
 void Room::set_link_tags(Direction dir, std::list<LinkTag> tags_list, bool mark_delta)
 {
-    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_link_tags call (" + id_str_ + ")");
-    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to set link tags on missing link (" + id_str_ + ")");
-    links_[static_cast<int>(dir) - 1]->set_tags(tags_list, mark_delta);
+    int array_pos = link_id(dir, "set_link_tags", true);
+    links_[array_pos]->set_tags(tags_list, mark_delta);
 }
 
 // Sets the map character for this Room.

@@ -25,11 +25,15 @@ enum class LinkTag : uint16_t {
     ChangedLink =   1,  // The exit link has changed.
     ChangedTags =   2,  // The ExitTags on this exit have been changed.
 
-    // Doors and other things that open. (not yet implemented)
+    // Doors and other things that open.
     Openable =      100,    // Is this exit something that can open and close?
     Door =          101,    // Is this exit a door, specifically?
     SeeThrough =    102,    // Is this exit a window, or something else we can see through (e.g. bars)?
     Open =          103,    // Is this exit currently open?
+
+    // Different types of doors (and openable things).
+    Gate =          200,    // This 'door' should be called a gate.
+    Window =        201,    // ... You know how this goes, I'm not gonna comment all of these.
 };
 
 class Link
@@ -41,6 +45,7 @@ public:
     bool        changed() const;    // Checks if this Link has been modified.
     void        clear_tag(LinkTag the_tag, bool mark_delta = true); // Clears a LinkTag from this Link.
     void        clear_tags(std::list<LinkTag> tags_list, bool mark_delta = true);   // Clears multiple LinkTags at the same time.
+    const std::string   door_name() const;  // Returns the name of the door (door, gate, etc.) on this Link, if any.
     uint32_t    get() const;    // Gets the Room linked to by this Link.)
     void        load_delta(FileReader* file);   // Loads the delta changes to this Link (should only be called from its parent Room).
     void        save_delta(FileWriter* file);   // Saves the delta changes to this Link (should only be called from its parent Room).
