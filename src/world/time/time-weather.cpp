@@ -1,4 +1,4 @@
-// world/time-weather.hpp -- The time and weather system.
+// world/time/time-weather.hpp -- The time and weather system.
 // Weather system originally based on Keran's MUSH/MUX Weather and Time Code Package Version 4.0 beta, copyright (c) 1996-1998 Keran (keranset@mail1.nai.net).
 // https://www.mushcode.com/File/Kerans-Weather-System-And-Time-Code-4-0-(PennMUSH)
 
@@ -15,7 +15,7 @@
 #include "util/text/stringutils.hpp"
 #include "world/area/room.hpp"
 #include "world/entity/player.hpp"
-#include "world/time-weather.hpp"
+#include "world/time/time-weather.hpp"
 
 #include <cmath>
 #include <filesystem>

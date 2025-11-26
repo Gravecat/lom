@@ -1,4 +1,4 @@
-// world/time-weather.hpp -- The time and weather system.
+// world/time/time-weather.hpp -- The time and weather system.
 // Weather system originally based on Keran's MUSH/MUX Weather and Time Code Package Version 4.0 beta, copyright (c) 1996-1998 Keran (keranset@mail1.nai.net).
 // https://www.mushcode.com/File/Kerans-Weather-System-And-Time-Code-4-0-(PennMUSH)
 
@@ -26,8 +26,6 @@ public:
     enum Time { SECOND = 1, MINUTE = 60, HOUR = 3600, DAY = 86400 };
     enum class TimeOfDay : uint8_t { DAWN, SUNRISE, MORNING, NOON, SUNSET, DUSK, NIGHT, MIDNIGHT, DAY };
     enum class Weather : uint8_t { BLIZZARD, STORMY, RAIN, CLEAR, FAIR, OVERCAST, FOG, LIGHTSNOW, SLEET };
-
-    static constexpr int    TIME_TO_MOVE =  30; // The time it takes to move from one Room to another, in seconds.
 
                 TimeWeather();              // Sets up the time and weather system with default values, and loads its strings into memory.
     Season      current_season();           // Gets the current season.

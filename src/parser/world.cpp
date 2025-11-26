@@ -10,7 +10,8 @@
 #include "util/text/stringutils.hpp"
 #include "world/area/room.hpp"
 #include "world/entity/player.hpp"
-#include "world/time-weather.hpp"
+#include "world/time/time-weather.hpp"
+#include "world/time/timing.hpp"
 #include "world/world.hpp"
 
 using std::string;
@@ -56,7 +57,7 @@ void travel(PARSER_FUNCTION)
 
     print(string("You travel to ") + (dir == Direction::UP || dir == Direction::DOWN ? "" : "the ") + Room::direction_name(dir) + ".");
     room_here->transfer(&player(), room_target);
-    westgate::world().time_weather().pass_time(TimeWeather::TIME_TO_MOVE);
+    westgate::world().time_weather().pass_time(timing::TIME_TO_MOVE);
     look(words_hashed, words);
 }
 
@@ -66,7 +67,7 @@ void wait(PARSER_FUNCTION)
     if (words_hashed.size() < 2)
     {
         print("Time passes...");
-        westgate::world().time_weather().pass_time(5 * 60, true);
+        westgate::world().time_weather().pass_time(timing::TIME_TO_WAIT, true);
         return;
     }
     if (words_hashed.size() < 3)
