@@ -48,8 +48,6 @@ class Room {
 public:
     static constexpr uint32_t   ROOM_SAVE_VERSION = 7;  // The expected version for saving/loading binary game data.
 
-    static const std::map<std::string, RoomTag> tag_map_;   // Used during loading YAML data, to convert RoomTag text names into RoomTag enums.
-
     static const std::string&   direction_name(Direction dir);  // Gets the string name of a Direction enum.
     static RoomTag              parse_room_tag(const std::string &tag); // Parses a string RoomTag name into a RoomTag enum.
 
@@ -57,6 +55,7 @@ public:
                 Room(const std::string& new_id);    // Creates a Room with a specified ID.
     void        add_entity(std::unique_ptr<Entity> entity); // Adds an Entity to this room directly. Use transfer() to move Entities between rooms.
     bool        can_see_outside() const;    // Checks if we can see the outside world from here.
+    void        clear_link_tag(Direction dir, LinkTag the_tag, bool mark_delta = true); // Clears a LinkTag from a specified Link.
     void        clear_tag(RoomTag the_tag, bool mark_delta = true); // Clears a RoomTag from this Room.
     void        clear_tags(std::list<RoomTag> tags_list, bool mark_delta = true);   // Clears multiple RoomTags at the same time.
     const Vector3   coords() const; // Retrieves the coordinates of this Room.
@@ -64,6 +63,7 @@ public:
     Room*       get_link(Direction dir);    // Gets the Room linked in the specified direction, or nullptr if none is linked.
     uint32_t    id() const;     // Retrieves the hashed ID of this Room.
     const std::string&  id_str() const; // Retrieves the string ID of this Room.
+    bool        link_tag(Direction dir, LinkTag tag) const; // Checks a LinkTag on a specified Link.
     void        load_delta(FileReader* file);   // Loads only the changes to this Room from a save file. Should only be called by a parent Region.
     void        look() const;   // Look around you. Just look around you.
     const std::string   map_char() const;   // Retrieves the map character for this Room.
@@ -72,6 +72,7 @@ public:
     void        set_coords(Vector3 new_coords); // Sets the coordinates of this room. Does not affect delta, as this should only ever be done when loading YAML.
     void        set_desc(const std::string& new_desc, bool mark_delta = true);  // Sets the description of this Room.
     void        set_link(Direction dir, uint32_t new_exit, bool mark_delta = true); // Sets an exit link from this Room to another.
+    void        set_link_tag(Direction dir, LinkTag tag, bool mark_delta = true);   // Sets a LinkTag on a specifieid Link.
     void        set_map_char(const std::string& new_char, bool mark_delta = true);  // Sets the map character for this Room.
     void        set_short_name(const std::string& new_short_name, bool mark_delta = true);  // Sets the short name of this Room.
     void        set_tag(RoomTag the_tag, bool mark_delta = true);   // Sets a RoomTag on this Room.
@@ -96,7 +97,8 @@ private:
     static constexpr uint32_t   ROOM_DELTA_LINK_UNCHANGED = 101;    // Marks this Link as existing but unchanged.
     static constexpr uint32_t   ROOM_DELTA_LINK_CHANGED =   201;    // Marks this Link as existing and modified.
 
-    static std::map<Direction, std::string> direction_names_;   // Static map that converts a Direction enum into string names.
+    static const std::map<Direction, std::string> direction_names_; // Static map that converts a Direction enum into string names.
+    static const std::map<std::string, RoomTag> tag_map_;   // Used during loading YAML data, to convert RoomTag text names into RoomTag enums.
 
     Vector3     coords_;        // The coordinates of this Room in the game world.
     std::string desc_;          // The text description of this Room, as shown to the player.

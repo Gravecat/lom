@@ -29,11 +29,14 @@ enum class LinkTag : uint16_t {
     Openable =      100,    // Is this exit something that can open and close?
     Door =          101,    // Is this exit a door, specifically?
     SeeThrough =    102,    // Is this exit a window, or something else we can see through (e.g. bars)?
+    Open =          103,    // Is this exit currently open?
 };
 
 class Link
 {
 public:
+    static LinkTag  parse_link_tag(const std::string &tag); // Parses a string LinkTag name into a LinkTag enum.
+
                 Link(); // Creates a new Link with default values.
     bool        changed() const;    // Checks if this Link has been modified.
     void        clear_tag(LinkTag the_tag, bool mark_delta = true); // Clears a LinkTag from this Link.
@@ -50,6 +53,8 @@ private:
     static constexpr uint32_t   LINK_DELTA_END =    0;  // Marks the end of the Link's delta changes.
     static constexpr uint32_t   LINK_DELTA_EXIT =   1;  // The linked exit on this Link has changed.
     static constexpr uint32_t   LINK_DELTA_TAGS =   2;  // The LinkTags on this Link have changed.
+
+    static const std::map<std::string, LinkTag> tag_map_;   // Used during loading YAML data, to convert LinkTag text names into LinkTag enums.
 
     uint32_t    links_to_;      // The Room this Exit links to, or 0 for unlinked.
     std::set<LinkTag>   tags_;  // Any and all tags on this Link.

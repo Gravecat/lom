@@ -194,12 +194,22 @@ void Region::load_from_gamedata(const string& filename, bool update_world)
         // If the Room has any exits, process them here.
         if (room_yaml.key_exists("exits"))
         {
-            auto room_exits = room_yaml.get_child("exits").keys_vals();
-            for (auto &exit : room_exits)
+            YAML exits_yaml = room_yaml.get_child("exits");
+            vector<string> room_exit_keys = exits_yaml.keys();
+            for (auto &exit_key : room_exit_keys)
             {
-                Direction dir = parser::parse_direction(hash::murmur3(exit.first));
-                if (dir == Direction::NONE) throw runtime_error(error_str + "Invalid room exits.");
-                room_ptr->set_link(dir, hash::murmur3(exit.second), false);
+                YAML exit_yaml = exits_yaml.get_child(exit_key);
+                Direction dir = parser::parse_direction(hash::murmur3(exit_key));
+                if (exit_yaml.is_seq()) // For Links with LinkTags attached.
+                {
+                    room_ptr->set_link(dir, hash::murmur3(exit_yaml.get(0)), false);
+                    if (exit_yaml.size() > 1)
+                    {
+                        for (size_t i = 1; i < exit_yaml.size(); i++)
+                            room_ptr->set_link_tag(dir, Link::parse_link_tag(exit_yaml.get(i)));
+                    }
+                }
+                else room_ptr->set_link(dir, hash::murmur3(exits_yaml.val(exit_key)), false);
             }
         }
 

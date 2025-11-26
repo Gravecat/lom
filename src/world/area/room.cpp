@@ -34,7 +34,7 @@ using westgate::terminal::print;
 namespace westgate {
 
 // Static map that converts a Direction enum into string names.
-map<Direction, string> Room::direction_names_ = {
+const map<Direction, string> Room::direction_names_ = {
     { Direction::NORTH, "north" }, { Direction::NORTHEAST, "northeast" }, { Direction::EAST, "east" }, { Direction::SOUTHEAST, "southeast" },
     { Direction::SOUTH, "south" }, { Direction::SOUTHWEST, "southwest" }, { Direction::WEST, "west" }, { Direction::NORTHWEST, "northwest" },
     { Direction::UP, "up" }, { Direction::DOWN, "down" }, { Direction::NONE, "" }
@@ -67,7 +67,22 @@ bool Room::can_see_outside() const
 {
     if (!tag(RoomTag::Indoors)) return true;
     if (tag(RoomTag::Windows)) return true;
+
+    for (auto &link : links_)
+    {
+        if (!link) continue;
+        if (link->tag(LinkTag::SeeThrough) || link->tag(LinkTag::Open)) return true;
+    }
+
     return false;
+}
+
+// Clears a LinkTag on a specifieid Link.
+void Room::clear_link_tag(Direction dir, LinkTag tag, bool mark_delta)
+{
+    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_link_tag call (" + id_str_ + ")");
+    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to set link tag on missing link (" + id_str_ + ")");
+    links_[static_cast<int>(dir) - 1]->clear_tag(tag, mark_delta);
 }
 
 // Clears a RoomTag from this Room.
@@ -126,6 +141,14 @@ uint32_t Room::id() const { return id_; }
 
 // Retrieves the string ID of this Room.
 const string& Room::id_str() const { return id_str_; }
+
+// Checks a LinkTag on a specified Link.
+bool Room::link_tag(Direction dir, LinkTag tag) const
+{
+    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on link_tag call (" + id_str_ + ")");
+    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to check link tag on missing link (" + id_str_ + ")");
+    return links_[static_cast<int>(dir) - 1]->tag(tag);
+}
 
 // Loads only the changes to this Room from a save file. Should only be called by a parent Region.
 void Room::load_delta(FileReader* file)
@@ -402,6 +425,14 @@ void Room::set_link(Direction dir, uint32_t new_exit, bool mark_delta)
     }
     else links_[array_pos]->set(new_exit, mark_delta);
     if (mark_delta) set_tag(RoomTag::ChangedExits);
+}
+
+// Sets a LinkTag on a specifieid Link.
+void Room::set_link_tag(Direction dir, LinkTag tag, bool mark_delta)
+{
+    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_link_tag call (" + id_str_ + ")");
+    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to set link tag on missing link (" + id_str_ + ")");
+    links_[static_cast<int>(dir) - 1]->set_tag(tag, mark_delta);
 }
 
 // Sets the map character for this Room.

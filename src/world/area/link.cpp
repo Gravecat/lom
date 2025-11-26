@@ -14,6 +14,10 @@ using std::to_string;
 
 namespace westgate {
 
+// Used during loading YAML data, to convert LinkTag text names into LinkTag enums.
+const std::map<std::string, LinkTag> Link::tag_map_ = { { "Openable", LinkTag::Openable }, { "Door", LinkTag::Door }, { "SeeThrough", LinkTag::SeeThrough },
+    { "Open", LinkTag::Open } };
+
 // Creates a new Link with default values.
 Link::Link() : links_to_(0) { }
 
@@ -61,6 +65,14 @@ void Link::load_delta(FileReader* file)
             default: throw runtime_error("Unknown Link tag in save data [" + to_string(delta_tag) + "]");
         }
     }
+}
+
+// Parses a string LinkTag name into a LinkTag enum.
+LinkTag Link::parse_link_tag(const std::string &tag)
+{
+    auto result = tag_map_.find(tag);
+    if (result == tag_map_.end()) throw runtime_error("Invalid LinkTag: " + tag);
+    return result->second;
 }
 
 // Saves the delta changes to this Link (should only be called from its parent Room).
