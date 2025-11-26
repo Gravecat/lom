@@ -80,9 +80,17 @@ bool Room::can_see_outside() const
 // Clears a LinkTag on a specifieid Link.
 void Room::clear_link_tag(Direction dir, LinkTag tag, bool mark_delta)
 {
-    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_link_tag call (" + id_str_ + ")");
-    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to set link tag on missing link (" + id_str_ + ")");
+    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on clear_link_tag call (" + id_str_ + ")");
+    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to clear link tag on missing link (" + id_str_ + ")");
     links_[static_cast<int>(dir) - 1]->clear_tag(tag, mark_delta);
+}
+
+// Clears multiple LinkTags at once.
+void Room::clear_link_tags(Direction dir, std::list<LinkTag> tags_list, bool mark_delta)
+{
+    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on clear_link_tags call (" + id_str_ + ")");
+    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to clear link tags on missing link (" + id_str_ + ")");
+    links_[static_cast<int>(dir) - 1]->clear_tags(tags_list, mark_delta);
 }
 
 // Clears a RoomTag from this Room.
@@ -433,6 +441,14 @@ void Room::set_link_tag(Direction dir, LinkTag tag, bool mark_delta)
     if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_link_tag call (" + id_str_ + ")");
     if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to set link tag on missing link (" + id_str_ + ")");
     links_[static_cast<int>(dir) - 1]->set_tag(tag, mark_delta);
+}
+
+// Sets multiple LinkTags at once.
+void Room::set_link_tags(Direction dir, std::list<LinkTag> tags_list, bool mark_delta)
+{
+    if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction on set_link_tags call (" + id_str_ + ")");
+    if (!links_[static_cast<int>(dir) - 1]) throw runtime_error("Attempt to set link tags on missing link (" + id_str_ + ")");
+    links_[static_cast<int>(dir) - 1]->set_tags(tags_list, mark_delta);
 }
 
 // Sets the map character for this Room.

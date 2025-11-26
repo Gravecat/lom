@@ -56,6 +56,7 @@ public:
     void        add_entity(std::unique_ptr<Entity> entity); // Adds an Entity to this room directly. Use transfer() to move Entities between rooms.
     bool        can_see_outside() const;    // Checks if we can see the outside world from here.
     void        clear_link_tag(Direction dir, LinkTag the_tag, bool mark_delta = true); // Clears a LinkTag from a specified Link.
+    void        clear_link_tags(Direction dir, std::list<LinkTag> tags_list, bool mark_delta = true);   // Clears multiple LinkTags at once.
     void        clear_tag(RoomTag the_tag, bool mark_delta = true); // Clears a RoomTag from this Room.
     void        clear_tags(std::list<RoomTag> tags_list, bool mark_delta = true);   // Clears multiple RoomTags at the same time.
     const Vector3   coords() const; // Retrieves the coordinates of this Room.
@@ -73,6 +74,7 @@ public:
     void        set_desc(const std::string& new_desc, bool mark_delta = true);  // Sets the description of this Room.
     void        set_link(Direction dir, uint32_t new_exit, bool mark_delta = true); // Sets an exit link from this Room to another.
     void        set_link_tag(Direction dir, LinkTag tag, bool mark_delta = true);   // Sets a LinkTag on a specifieid Link.
+    void        set_link_tags(Direction dir, std::list<LinkTag> tags_list, bool mark_delta = true); // Sets multiple LinkTags at once.
     void        set_map_char(const std::string& new_char, bool mark_delta = true);  // Sets the map character for this Room.
     void        set_short_name(const std::string& new_short_name, bool mark_delta = true);  // Sets the short name of this Room.
     void        set_tag(RoomTag the_tag, bool mark_delta = true);   // Sets a RoomTag on this Room.
