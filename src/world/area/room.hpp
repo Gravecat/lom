@@ -36,7 +36,7 @@ enum class RoomTag : uint16_t {
     // Room attributes regarding the time/weather system.
     Indoors =       201,    // Is this Room indoors?
     Windows =       202,    // Is this Room an indoors location with windows?
-    Streets =       203,    // Is this Room part of some streets in a city?
+    City =          203,    // Is this Room part of a city?
     Underground =   204,    // Is this Room underground?
     Trees =         205,    // Are there trees nearby?
     AlwaysWinter =  206,    // The weather system will be locked to winter for this room.
@@ -57,6 +57,7 @@ public:
                 Room(); // Creates a blank Room with default values and no ID.
                 Room(const std::string& new_id);    // Creates a Room with a specified ID.
     void        add_entity(std::unique_ptr<Entity> entity); // Adds an Entity to this room directly. Use transfer() to move Entities between rooms.
+    bool        can_see_outside() const;    // Checks if we can see the outside world from here.
     void        clear_tag(RoomTag the_tag, bool mark_delta = true); // Clears a RoomTag from this Room.
     void        clear_tags(std::list<RoomTag> tags_list, bool mark_delta = true);   // Clears multiple RoomTags at the same time.
     const Vector3   coords() const; // Retrieves the coordinates of this Room.

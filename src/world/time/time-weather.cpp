@@ -130,10 +130,11 @@ TimeWeather::Indoors TimeWeather::indoors()
     if (room->tag(RoomTag::Underground)) return Indoors::UNDERGROUND;
     if (room->tag(RoomTag::Indoors))
     {
-        if (room->tag(RoomTag::Windows)) return Indoors::INDOORS;
+        if (room->can_see_outside()) return Indoors::INDOORS;
+        else if (room->tag(RoomTag::City)) return Indoors::INDOORS_CITY;
         else return Indoors::INDOORS_NO_WINDOWS;
     }
-    if (room->tag(RoomTag::Streets)) return Indoors::OUTSIDE_STREETS;
+    if (room->tag(RoomTag::City)) return Indoors::OUTSIDE_CITY;
     return Indoors::OUTSIDE;
 }
 
@@ -219,7 +220,8 @@ bool TimeWeather::pass_time(float seconds, bool allow_interrupt)
             //player_old_hp = World::player()->hp();  // Because HP might go *up* in the meantime.
         }
         Indoors indoor_state = indoors();
-        const bool show_weather_messages = (indoor_state == Indoors::OUTSIDE || indoor_state == Indoors::OUTSIDE_STREETS || indoor_state == Indoors::INDOORS);
+        const bool show_weather_messages = (indoor_state == Indoors::OUTSIDE || indoor_state == Indoors::OUTSIDE_CITY || indoor_state == Indoors::INDOORS ||
+            indoor_state == Indoors::INDOORS_CITY);
 
         TimeOfDay old_time_of_day = time_of_day(true);
         int old_time = time_;
@@ -258,6 +260,27 @@ bool TimeWeather::pass_time(float seconds, bool allow_interrupt)
 // Is the player near trees right now?
 bool TimeWeather::player_near_trees()
 { return player().parent_room()->tag(RoomTag::Trees); }
+
+// Replaces tokens like $LANDSCAPE|STREETS$ in the source message with correct text.
+void TimeWeather::replace_tokens(string &str, Indoors indoor_state)
+{
+    if (indoor_state == Indoors::OUTSIDE_CITY || indoor_state == Indoors::INDOORS_CITY)
+    {
+        stringutils::find_and_replace(str, "$LAND|CITY$", "city");
+        stringutils::find_and_replace(str, "$LAND|STREET$", "street");
+        stringutils::find_and_replace(str, "$LAND|STREETS$", "streets");
+        stringutils::find_and_replace(str, "$LANDSCAPE|CITY$", "city");
+        stringutils::find_and_replace(str, "$LANDSCAPE|STREETS$", "streets");
+    }
+    else
+    {
+        stringutils::find_and_replace(str, "$LAND|CITY$", "land");
+        stringutils::find_and_replace(str, "$LAND|STREET$", "land");
+        stringutils::find_and_replace(str, "$LAND|STREETS$", "land");
+        stringutils::find_and_replace(str, "$LANDSCAPE|CITY$", "landscape");
+        stringutils::find_and_replace(str, "$LANDSCAPE|STREETS$", "landscape");
+    }
+}
 
 // Converts a season integer to a string.
 string TimeWeather::season_str(TimeWeather::Season season)
@@ -360,8 +383,10 @@ void TimeWeather::trigger_event(string *message_to_append, bool silent)
     if (silent) return;
 
     // Display an appropriate message for the changing time/weather, if we're outdoors.
-    const string time_message = tw_string_map_.at(time_of_day_str(true) + "_" + weather_str(fix_weather(weather_, current_season())) +
-        (indoors() == Indoors::INDOORS ? "_INDOORS" : ""));
+    const Indoors indoor_state = indoors();
+    string time_message = tw_string_map_.at(time_of_day_str(true) + "_" + weather_str(fix_weather(weather_, current_season())) +
+        (indoor_state == Indoors::INDOORS ? "_INDOORS" : ""));
+    replace_tokens(time_message, indoor_state);
     if (message_to_append) *message_to_append += " " + time_message;
     else print("{y}" + time_message);
 }
@@ -378,7 +403,8 @@ string TimeWeather::weather_desc()
 string TimeWeather::weather_desc(TimeWeather::Season season, bool trees)
 {
     const Indoors indoor_state = indoors();
-    const bool indoor_bool = (indoor_state == Indoors::INDOORS || indoor_state == Indoors::INDOORS_NO_WINDOWS);
+    const bool indoor_bool = (indoor_state == Indoors::INDOORS || indoor_state == Indoors::INDOORS_NO_WINDOWS || indoor_state == Indoors::INDOORS_CITY ||
+        indoor_state == Indoors::UNDERGROUND);
     const Weather weather = fix_weather(weather_, season);
     string desc = tw_string_map_.at(season_str(season) + "_" + time_of_day_str(false) + "_" + weather_str(weather)  + (indoor_bool ? "_INDOORS" : ""));
     if (trees)
@@ -387,7 +413,7 @@ string TimeWeather::weather_desc(TimeWeather::Season season, bool trees)
         if (time_of_day(false) == TimeOfDay::DUSK || time_of_day(false) == TimeOfDay::NIGHT) tree_time = "NIGHT";
         desc += " " + tw_string_map_.at(season_str(season) + "_" + tree_time + "_" + weather_str(weather) + "_TREES");
     }
-    if (indoor_state == Indoors::OUTSIDE_STREETS) stringutils::find_and_replace(desc, "landscape", "city");
+    replace_tokens(desc, indoor_state);
     return desc;
 }
 

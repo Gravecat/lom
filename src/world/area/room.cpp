@@ -42,7 +42,7 @@ map<Direction, string> Room::direction_names_ = {
 
 // Used during loading YAML data, to convert RoomTag text names into RoomTag enums.
 const std::map<std::string, RoomTag> Room::tag_map_ = { {"Explored", RoomTag::Explored }, { "Indoors", RoomTag::Indoors }, { "Windows", RoomTag::Windows },
-    { "Streets", RoomTag::Streets }, { "Underground", RoomTag::Underground }, { "Trees", RoomTag::Trees }, { "AlwaysWinter", RoomTag::AlwaysWinter },
+    { "City", RoomTag::City }, { "Underground", RoomTag::Underground }, { "Trees", RoomTag::Trees }, { "AlwaysWinter", RoomTag::AlwaysWinter },
     { "AlwaysSpring", RoomTag::AlwaysSpring }, { "AlwaysSummer", RoomTag::AlwaysSummer }, { "AlwaysAutumn", RoomTag::AlwaysAutumn } };
 
 // Creates a blank Room with default values and no ID.
@@ -60,6 +60,14 @@ void Room::add_entity(unique_ptr<Entity> entity)
 {
     entity->set_parent_room(this);
     entities_.push_back(std::move(entity));
+}
+
+// Checks if we can see the outside world from here.
+bool Room::can_see_outside() const
+{
+    if (!tag(RoomTag::Indoors)) return true;
+    if (tag(RoomTag::Windows)) return true;
+    return false;
 }
 
 // Clears a RoomTag from this Room.
@@ -209,8 +217,11 @@ void Room::look() const
 
     vector<string> room_desc = stringutils::ansi_vector_split(desc_, desc_width);
 
-    vector<string> weather_desc = stringutils::ansi_vector_split("{K}" + world().time_weather().weather_desc(), desc_width);
-    room_desc.insert(room_desc.end(), weather_desc.begin(), weather_desc.end());
+    if (can_see_outside())
+    {
+        vector<string> weather_desc = stringutils::ansi_vector_split("{K}" + world().time_weather().weather_desc(), desc_width);
+        room_desc.insert(room_desc.end(), weather_desc.begin(), weather_desc.end());
+    }
 
     vector<string> exits_list;
     string exits_list_str;
