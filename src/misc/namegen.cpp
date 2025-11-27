@@ -1,4 +1,4 @@
-// util/text/namegen.cpp -- Procedural name generation for NPCs.
+// misc/namegen.cpp -- Procedural name generation for NPCs.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
@@ -8,10 +8,10 @@
 
 #include "3rdparty/fantasyname/namegen.hpp"
 #include "core/core.hpp"
+#include "misc/namegen.hpp"
 #include "trailmix/file/fileutils.hpp"
 #include "trailmix/file/yaml.hpp"
 #include "trailmix/math/random.hpp"
-#include "util/text/namegen.hpp"
 #include "world/entity/entity.hpp"
 
 using namespace trailmix;

@@ -16,12 +16,12 @@ set(WESTGATE_CPPS
   src/core/core.cpp
   src/core/game.cpp
   src/core/terminal.cpp
+  src/misc/namegen.cpp
   src/parser/cheats.cpp
   src/parser/meta.cpp
   src/parser/parser.cpp
   src/parser/silly.cpp
   src/parser/world-interaction.cpp
-  src/util/text/namegen.cpp
   src/world/area/automap.cpp
   src/world/area/link.cpp
   src/world/area/region.cpp
