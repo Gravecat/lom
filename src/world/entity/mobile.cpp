@@ -9,7 +9,7 @@
 #include "trailmix/file/filewriter.hpp"
 #include "world/entity/mobile.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
 
 namespace westgate {
 

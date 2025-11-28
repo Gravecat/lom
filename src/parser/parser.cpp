@@ -20,14 +20,14 @@
 #include "trailmix/text/stringutils.hpp"
 #include "world/area/room.hpp"
 
-using namespace trailmix;
+using namespace trailmix::text::hash;
+using namespace trailmix::text::utils;
 using std::stol;
 using std::string;
 using std::vector;
 using westgate::terminal::print;
 
-namespace westgate {
-namespace parser {
+namespace westgate::parser {
 
 static const std::map<uint32_t, Direction> parser_directions = {
     { 1081869984, Direction::NORTH }, { 4254119393, Direction::NORTH },
@@ -111,10 +111,10 @@ void process_input(const string& input)
     if (!input.size()) return;  // Nothing to do here.
 
     // Split the input into multiple words. We're mostly gonna be using a 'verb noun' structure here, but it might get more complex later.
-    vector<string> words = stringutils::string_explode(input);
+    vector<string> words = string_explode(input);
     vector<uint32_t> word_hashes;
     for (auto word : words)
-        word_hashes.push_back(hash::murmur3(stringutils::str_tolower(word)));
+        word_hashes.push_back(murmur3(str_tolower(word)));
 
     auto result = parser_verbs.find(word_hashes.at(0));
     if (result == parser_verbs.end()) print("{Y}I don't know that word.");
@@ -130,4 +130,4 @@ bool yes_no()
     return (terminal::get_number(0, 1, true) == 1);
 }
 
-} } // parser, westgate namespaces
+}   // westgate::parser namespace

@@ -22,7 +22,11 @@
 #include "world/time/time-weather.hpp"
 #include "world/world.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
+using namespace trailmix::math;
+using namespace trailmix::text::ansi;
+using namespace trailmix::text::hash;
+using namespace trailmix::text::utils;
 using std::list;
 using std::make_unique;
 using std::map;
@@ -60,7 +64,7 @@ Room::Room() : coords_{0,0,-10000}, desc_("Missing room description."), links_{}
 Room::Room(const string& new_id) : Room()
 {
     id_str_ = new_id;
-    id_ = hash::murmur3(new_id);
+    id_ = murmur3(new_id);
 }
 
 // Adds an Entity to this room directly. Use transfer() to move Entities between rooms.
@@ -292,11 +296,11 @@ void Room::look() const
             "simply type: {C}automap off\n");
     }
 
-    vector<string> room_desc = ansiutils::ansi_vector_split(desc_, desc_width);
+    vector<string> room_desc = ansi_vector_split(desc_, desc_width);
 
     if (can_see_outside())
     {
-        vector<string> weather_desc = ansiutils::ansi_vector_split("{K}" + world().time_weather().weather_desc(), desc_width);
+        vector<string> weather_desc = ansi_vector_split("{K}" + world().time_weather().weather_desc(), desc_width);
         room_desc.insert(room_desc.end(), weather_desc.begin(), weather_desc.end());
     }
 
@@ -318,12 +322,12 @@ void Room::look() const
             else exit_tags.push_back("closed");
         }
 
-        if (exit_tags.size()) exit_name += " (" + stringutils::comma_list(exit_tags) + ")";
+        if (exit_tags.size()) exit_name += " (" + comma_list(exit_tags) + ")";
         exits_list.push_back(exit_name);
     }
-    if (exits_list.size()) exits_list_str = string("{c}There ") + (exits_list.size() > 1 ? "are " : "is ") + stringutils::number_to_text(exits_list.size()) +
-        " obvious exit" + (exits_list.size() > 1 ? "s" : "") + ": " + stringutils::comma_list(exits_list, stringutils::CL_MODE_USE_AND) + ".";
-    exits_list = ansiutils::ansi_vector_split(exits_list_str, desc_width);
+    if (exits_list.size()) exits_list_str = string("{c}There ") + (exits_list.size() > 1 ? "are " : "is ") + number_to_text(exits_list.size()) +
+        " obvious exit" + (exits_list.size() > 1 ? "s" : "") + ": " + comma_list(exits_list, CL_MODE_USE_AND) + ".";
+    exits_list = ansi_vector_split(exits_list_str, desc_width);
     room_desc.insert(room_desc.end(), exits_list.begin(), exits_list.end());
 
     vector<string> room_map;

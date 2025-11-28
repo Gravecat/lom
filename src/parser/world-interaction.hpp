@@ -10,13 +10,11 @@
 #include "parser/parser.hpp"
 #include "parser/parser-macros.hpp"
 
-namespace westgate {
-namespace parser {
-namespace world_interaction {
+namespace westgate::parser::world_interaction {
 
 void    look(PARSER_FUNCTION);      // Look around you. Just look around you.
 void    travel(PARSER_FUNCTION);    // Travels in a specific direction.
 void    open_close(PARSER_FUNCTION);    // Attempts to open or close a door or similar.
 void    wait(PARSER_FUNCTION);      // Waits or rests for a specified period of time.
 
-} } }   // world_interaction, parser, westgate namespaces
+}   // westgate::parser::world_interaction namespace

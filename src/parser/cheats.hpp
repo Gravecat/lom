@@ -10,10 +10,8 @@
 #include "parser/parser.hpp"
 #include "parser/parser-macros.hpp"
 
-namespace westgate {
-namespace parser {
-namespace cheats {
+namespace westgate::parser::cheats {
 
 void    hash(PARSER_FUNCTION);  // Hashes words into integers.
 
-} } }   // cheats, parser, westgate namespaces
+}   // namespace westgate::parser::cheats

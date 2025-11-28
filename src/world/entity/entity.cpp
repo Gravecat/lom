@@ -13,7 +13,7 @@
 #include "world/area/room.hpp"
 #include "world/entity/entity.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
 using std::list;
 using std::runtime_error;
 using std::string;

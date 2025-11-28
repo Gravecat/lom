@@ -10,9 +10,7 @@
 using std::to_string;
 using westgate::terminal::print;
 
-namespace westgate {
-namespace parser {
-namespace cheats {
+namespace westgate::parser::cheats {
 
 // Hashes words into integers.
 void hash(PARSER_FUNCTION)
@@ -25,4 +23,4 @@ void hash(PARSER_FUNCTION)
     print("The hashed version of {C}" + words.at(1) + " {w}is {C}" + to_string(words_hashed.at(1)));
 }
 
-} } }   // cheats, parser, westgate namespaces
+}   // namespace westgate::parser::cheats

@@ -8,12 +8,10 @@
 #include "parser/cheats.hpp"
 #include "trailmix/math/random.hpp"
 
-using namespace trailmix;
+using namespace trailmix::math;
 using westgate::terminal::print;
 
-namespace westgate {
-namespace parser {
-namespace silly {
+namespace westgate::parser::silly {
 
 // You are likely to be eaten by a grue.
 void magic_word(PARSER_FUNCTION)
@@ -23,4 +21,4 @@ void magic_word(PARSER_FUNCTION)
     else print("{K}Nothing happens.");
 }
 
-} } }   // silly, parser, westgate namespaces
+}   // namespace westgate::parser::silly

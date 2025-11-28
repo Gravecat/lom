@@ -21,7 +21,8 @@
 #include "trailmix/file/yaml.hpp"
 #include "trailmix/sys/binpath.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
+using namespace trailmix::sys;
 using std::cerr;
 using std::cout;
 using std::endl;

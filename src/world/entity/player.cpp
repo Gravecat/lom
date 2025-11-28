@@ -10,7 +10,7 @@
 #include "world/entity/player.hpp"
 #include "world/area/room.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
 using std::list;
 using std::runtime_error;
 using std::to_string;

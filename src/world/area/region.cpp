@@ -20,7 +20,11 @@
 #include "world/area/region.hpp"
 #include "world/world.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
+using namespace trailmix::math;
+using namespace trailmix::sys;
+using namespace trailmix::text::hash;
+using namespace trailmix::text::utils;
 using std::invalid_argument;
 using std::make_unique;
 using std::out_of_range;
@@ -44,7 +48,7 @@ Region::~Region()
 
 // Attempts to find a room by its string ID.
 Room* Region::find_room(const string& id) const
-{ return find_room(hash::murmur3(id)); }
+{ return find_room(murmur3(id)); }
 
 // Attempts to find a room by its hashed ID.
 Room* Region::find_room(uint32_t id) const
@@ -171,7 +175,7 @@ void Region::load_from_gamedata(const string& filename, bool update_world)
         room_ptr->set_short_name(room_yaml.val("short_name"), false);
 
         if (!room_yaml.key_exists("desc")) throw runtime_error(error_str + "Missing room description.");
-        room_ptr->set_desc(stringutils::strip_trailing_newlines(room_yaml.val("desc")), false);
+        room_ptr->set_desc(strip_trailing_newlines(room_yaml.val("desc")), false);
 
         if (!room_yaml.key_exists("coords")) throw runtime_error(error_str + "Missing room coordinates.");
         if (!room_yaml.get_child("coords").is_seq()) throw runtime_error(error_str + "Coordinate data not correctly set (expected sequence).");
@@ -200,17 +204,17 @@ void Region::load_from_gamedata(const string& filename, bool update_world)
             for (auto &exit_key : room_exit_keys)
             {
                 YAML exit_yaml = exits_yaml.get_child(exit_key);
-                Direction dir = parser::parse_direction(hash::murmur3(exit_key));
+                Direction dir = parser::parse_direction(murmur3(exit_key));
                 if (exit_yaml.is_seq()) // For Links with LinkTags attached.
                 {
-                    room_ptr->set_link(dir, hash::murmur3(exit_yaml.get(0)), false);
+                    room_ptr->set_link(dir, murmur3(exit_yaml.get(0)), false);
                     if (exit_yaml.size() > 1)
                     {
                         for (size_t i = 1; i < exit_yaml.size(); i++)
                             room_ptr->set_link_tag(dir, Link::parse_link_tag(exit_yaml.get(i)), false);
                     }
                 }
-                else room_ptr->set_link(dir, hash::murmur3(exits_yaml.val(exit_key)), false);
+                else room_ptr->set_link(dir, murmur3(exits_yaml.val(exit_key)), false);
             }
         }
 

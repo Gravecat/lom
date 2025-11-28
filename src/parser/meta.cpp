@@ -13,9 +13,7 @@
 
 using westgate::terminal::print;
 
-namespace westgate {
-namespace parser {
-namespace meta {
+namespace westgate::parser::meta {
 
 // Toggles the automap on or off.
 void automap(PARSER_FUNCTION)
@@ -53,4 +51,4 @@ void save(PARSER_FUNCTION)
     game().save(true);
 }
 
-} } }   // meta, parser, westgate namespaces
+}   // namespace westgate::parser::meta

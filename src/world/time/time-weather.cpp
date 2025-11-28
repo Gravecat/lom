@@ -20,7 +20,9 @@
 #include <cmath>
 #include <filesystem>
 
-using namespace trailmix;
+using namespace trailmix::file;
+using namespace trailmix::math;
+using namespace trailmix::text::utils;
 using std::floor;
 using std::runtime_error;
 using std::string;
@@ -58,7 +60,7 @@ TimeWeather::TimeWeather() : time_passed_(0), time_passed_subsecond_(0)
         {
             const int map_id = key.at(4) - '0';
             if (map_id < 0 || map_id > 8) throw runtime_error("Invalid weather map strings.");
-            weather_change_map_.at(map_id) = stringutils::decode_compressed_string(val);
+            weather_change_map_.at(map_id) = decode_compressed_string(val);
         }
         else tw_string_map_.insert({key, val});
     }
@@ -275,19 +277,19 @@ void TimeWeather::replace_tokens(string &str, Indoors indoor_state)
 {
     if (indoor_state == Indoors::OUTSIDE_CITY || indoor_state == Indoors::INDOORS_CITY)
     {
-        stringutils::find_and_replace(str, "$LAND|CITY$", "city");
-        stringutils::find_and_replace(str, "$LAND|STREET$", "street");
-        stringutils::find_and_replace(str, "$LAND|STREETS$", "streets");
-        stringutils::find_and_replace(str, "$LANDSCAPE|CITY$", "city");
-        stringutils::find_and_replace(str, "$LANDSCAPE|STREETS$", "streets");
+        find_and_replace(str, "$LAND|CITY$", "city");
+        find_and_replace(str, "$LAND|STREET$", "street");
+        find_and_replace(str, "$LAND|STREETS$", "streets");
+        find_and_replace(str, "$LANDSCAPE|CITY$", "city");
+        find_and_replace(str, "$LANDSCAPE|STREETS$", "streets");
     }
     else
     {
-        stringutils::find_and_replace(str, "$LAND|CITY$", "land");
-        stringutils::find_and_replace(str, "$LAND|STREET$", "land");
-        stringutils::find_and_replace(str, "$LAND|STREETS$", "land");
-        stringutils::find_and_replace(str, "$LANDSCAPE|CITY$", "landscape");
-        stringutils::find_and_replace(str, "$LANDSCAPE|STREETS$", "landscape");
+        find_and_replace(str, "$LAND|CITY$", "land");
+        find_and_replace(str, "$LAND|STREET$", "land");
+        find_and_replace(str, "$LAND|STREETS$", "land");
+        find_and_replace(str, "$LANDSCAPE|CITY$", "landscape");
+        find_and_replace(str, "$LANDSCAPE|STREETS$", "landscape");
     }
 }
 

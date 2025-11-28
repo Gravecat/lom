@@ -10,12 +10,10 @@
 #include "parser/parser.hpp"
 #include "parser/parser-macros.hpp"
 
-namespace westgate {
-namespace parser {
-namespace meta {
+namespace westgate::parser::meta {
 
 void    automap(PARSER_FUNCTION);   // Toggles the automap on or off.
 void    quit(PARSER_FUNCTION);      // Quits the game.
 void    save(PARSER_FUNCTION);      // Saves the game.
 
-} } }   // meta, parser, westgate namespaces
+}   // namespace westgate::parser::meta

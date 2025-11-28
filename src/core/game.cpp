@@ -19,7 +19,8 @@
 #include "world/time/time-weather.hpp"
 #include "world/world.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
+using namespace trailmix::sys;
 using std::make_unique;
 using std::runtime_error;
 using std::string;

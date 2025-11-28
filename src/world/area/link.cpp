@@ -8,7 +8,7 @@
 #include "trailmix/file/filewriter.hpp"
 #include "world/area/link.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
 using std::list;
 using std::runtime_error;
 using std::to_string;

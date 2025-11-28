@@ -10,10 +10,8 @@
 #include "parser/parser.hpp"
 #include "parser/parser-macros.hpp"
 
-namespace westgate {
-namespace parser {
-namespace silly {
+namespace westgate::parser::silly {
 
 void    magic_word(PARSER_FUNCTION);    // You are likely to be eaten by a grue.
 
-} } }   // silly, parser, westgate namespaces
+}   // namespace westgate::parser::silly

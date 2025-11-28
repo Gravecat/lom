@@ -19,7 +19,8 @@
 #include "world/time/time-weather.hpp"
 #include "world/world.hpp"
 
-using namespace trailmix;
+using namespace trailmix::sys;
+using namespace trailmix::text::hash;
 using std::make_unique;
 using std::runtime_error;
 using std::to_string;
@@ -89,7 +90,7 @@ void World::create_region_saves(int save_slot)
 
 // Attempts to find a room by its string ID.
 Room* World::find_room(const std::string& id, uint32_t region_id)
-{ return find_room(hash::murmur3(id), region_id); }
+{ return find_room(murmur3(id), region_id); }
 
 // Attempts to find a room by its hashed ID.
 Room* World::find_room(uint32_t id, uint32_t region_id)

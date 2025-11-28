@@ -14,13 +14,11 @@
 #include "world/time/timing.hpp"
 #include "world/world.hpp"
 
-using namespace trailmix;
+using namespace trailmix::text::utils;
 using std::string;
 using westgate::terminal::print;
 
-namespace westgate {
-namespace parser {
-namespace world_interaction {
+namespace westgate::parser::world_interaction {
 
 // Look around you. Just look around you.
 void look(PARSER_FUNCTION)
@@ -160,9 +158,9 @@ void wait(PARSER_FUNCTION)
             print("{Y}I don't understand. Please specify how long you want to wait in {G}seconds{Y}, {G}minutes{Y}, {G}hours{Y} or {G}days{Y}.");
             return;
     }
-    print("You prepare to wait for " + stringutils::number_to_text(original_amount) + " " + time_str + (original_amount > 1 ? "s" : "") +
+    print("You prepare to wait for " + number_to_text(original_amount) + " " + time_str + (original_amount > 1 ? "s" : "") +
         ". Time passes...");
     world().time_weather().pass_time(amount, true);
 }
 
-} } }   // world_interaction, parser, westgate namespaces
+}   // westgate::parser::world_interaction namespace

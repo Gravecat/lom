@@ -14,7 +14,9 @@
 #include "trailmix/math/random.hpp"
 #include "world/entity/entity.hpp"
 
-using namespace trailmix;
+using namespace trailmix::file;
+using namespace trailmix::file::utils;
+using namespace trailmix::math;
 using std::runtime_error;
 using std::string;
 using std::tolower;
@@ -32,10 +34,10 @@ string ProcNameGen::consonant()
 // Loads the namelists from the data files.
 void ProcNameGen::load_namelists()
 {
-    names_f = fileutils::file_to_vec(core().datafile("namegen/names-f.txt"));
-    names_m = fileutils::file_to_vec(core().datafile("namegen/names-m.txt"));
-    names_s_a = fileutils::file_to_vec(core().datafile("namegen/surname-a.txt"));
-    names_s_b = fileutils::file_to_vec(core().datafile("namegen/surname-b.txt"));
+    names_f = file_to_vec(core().datafile("namegen/names-f.txt"));
+    names_m = file_to_vec(core().datafile("namegen/names-m.txt"));
+    names_s_a = file_to_vec(core().datafile("namegen/surname-a.txt"));
+    names_s_b = file_to_vec(core().datafile("namegen/surname-b.txt"));
 
     YAML yaml(core().datafile("namegen/namegen-strings.yml"));
     if (!yaml.is_map()) throw runtime_error("namegen-strings.yml: Invalid file format");
