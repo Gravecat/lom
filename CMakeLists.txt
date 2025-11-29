@@ -180,7 +180,7 @@ if(TARGET_WINDOWS)
   )
 endif(TARGET_WINDOWS)
 
-# Include the Trailmix utility code repo.
+# This project makes pretty heavy use of my Trailmix utility library: https://github.com/Gravecat/trailmix
 include(FetchContent)
 set(TRAILMIX_MURMURHASH TRUE)
 set(TRAILMIX_YAML TRUE)
