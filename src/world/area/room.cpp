@@ -350,19 +350,22 @@ void Room::look() const
     exits_list = ansi_vector_split(exits_list_str, desc_width);
     room_desc.insert(room_desc.end(), exits_list.begin(), exits_list.end());
 
-    vector<string> room_map;
+    // Generate the room map (if any), then combine the room map and room description together.
+    vector<string> room_map, combined_vec;
     if (automap_enabled) room_map = world().automap().generate_map(this);
-    bool desc_longer = room_desc.size() > room_map.size();
-    for (size_t i = 0; i < (desc_longer ? room_map.size() : room_desc.size()); i++)
-        room_map.at(i) += room_desc.at(i);
-    if (desc_longer)
+    const bool desc_longer = room_desc.size() > room_map.size();
+    const size_t total_length = (desc_longer ? room_desc.size() : room_map.size());
+    const size_t map_start = (desc_longer ? (room_desc.size() / 2 - room_map.size() / 2) : 0);
+    combined_vec.reserve(total_length);
+    for (size_t i = 0; i < total_length; i++)
     {
-        for (size_t i = room_map.size(); i < room_desc.size(); i++)
-            room_map.push_back((automap_enabled ? "           " : "") + room_desc.at(i));
+        if (i >= map_start && (i - map_start < room_map.size())) combined_vec.push_back(room_map.at(i - map_start) +
+            (room_desc.size() > i ? room_desc.at(i) : ""));
+        else combined_vec.push_back((automap_enabled ? "           " : "") + room_desc.at(i));
     }
 
     print();
-    for (auto str : room_map)
+    for (auto str : combined_vec)
         print(str);
 }
 
