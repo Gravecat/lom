@@ -56,23 +56,34 @@ vector<string> Automap::generate_map(const Room* start_room)
             for (int i = 1; i <= 8; i++)
             {
                 bool unfinished_link = false;
-                if (!room->get_link(static_cast<Direction>(i)))
+                const Direction dir = static_cast<Direction>(i);
+                std::string link_colour = "{K}";
+                if (!room->get_link(dir))
                 {
-                    if (room->is_unfinished(static_cast<Direction>(i))) unfinished_link = true;
+                    if (room->is_unfinished(dir))
+                    {
+                        unfinished_link = true;
+                        link_colour = "{r}";
+                    }
                     else continue;
                 }
                 const unsigned int link_vec_pos = vec_pos + link_offsets.at(i);
                 const char current_sym = game_map.at(link_vec_pos).at(game_map.at(link_vec_pos).size() - 1);
                 const char new_sym = link_symbols.at(i);
+                if (!unfinished_link && room->link_tag(dir, LinkTag::Openable) && !room->link_tag(dir, LinkTag::Open))
+                {
+                    if (room->link_tag(dir, LinkTag::AwareOfLock)) link_colour = "{R}";
+                    else link_colour = "{y}";
+                }
                 
                 // Check for overlapping / \ links, and turn them into an X.
                 if (current_sym == 'X') continue;
-                else if ((current_sym == '/' && new_sym == '\\') || (current_sym == '\\' && new_sym == '/'))
+                else if ((current_sym == '/' && new_sym == '\\') || (current_sym == '\\' && new_sym == '/') || current_sym == '+')
                 {
                     game_map.at(link_vec_pos).pop_back();
                     game_map.at(link_vec_pos) += "X";
                 }
-                else game_map.at(link_vec_pos) = (unfinished_link ? "{r}" : "{K}") + string(1, link_symbols.at(i));
+                else game_map.at(link_vec_pos) = link_colour + string(1, new_sym);
             }
         }
     }
