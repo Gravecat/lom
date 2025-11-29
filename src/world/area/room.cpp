@@ -4,8 +4,6 @@
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-#include <vector>
-
 #include "core/core.hpp"
 #include "core/game.hpp"
 #include "core/terminal.hpp"
@@ -40,18 +38,12 @@ using westgate::terminal::print;
 
 namespace westgate {
 
-// Static map that converts a Direction enum into string names.
-const std::map<Direction, string> Room::direction_names_ = {
-    { Direction::NORTH, "north" }, { Direction::NORTHEAST, "northeast" }, { Direction::EAST, "east" }, { Direction::SOUTHEAST, "southeast" },
-    { Direction::SOUTH, "south" }, { Direction::SOUTHWEST, "southwest" }, { Direction::WEST, "west" }, { Direction::NORTHWEST, "northwest" },
-    { Direction::UP, "up" }, { Direction::DOWN, "down" }, { Direction::NONE, "" }
-};
+// Lookup table to convert a Direction enum into a string name.
+const string Room::direction_names_[11] = { "", "north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest", "up", "down" };
 
-// Static map that inverts a Direction (e.g. east -> west).
-const std::map<Direction, Direction> Room::reverse_direction_map_ = { { Direction::NONE, Direction::NONE }, { Direction::NORTH, Direction:: SOUTH },
-    { Direction::NORTHEAST, Direction::SOUTHWEST }, { Direction::EAST, Direction::WEST }, { Direction::SOUTHEAST, Direction::NORTHWEST },
-    { Direction::SOUTH, Direction::NORTH }, { Direction::SOUTHWEST, Direction::NORTHEAST }, { Direction::WEST, Direction::EAST },
-    { Direction::NORTHWEST, Direction::SOUTHEAST }, { Direction::UP, Direction::DOWN }, { Direction::DOWN, Direction::UP } };
+// Lookup table that inverts a Direction (e.g. east -> west).
+const Direction Room::reverse_direction_map_[11] = { Direction::NONE, Direction:: SOUTH, Direction::SOUTHWEST, Direction::WEST, Direction::NORTHWEST,
+    Direction::NORTH, Direction::NORTHEAST, Direction::EAST, Direction::SOUTHEAST, Direction::DOWN, Direction::UP };
 
 // Used during loading YAML data, to convert RoomTag text names into RoomTag enums.
 const std::map<std::string, RoomTag> Room::tag_map_ = { {"Explored", RoomTag::Explored }, { "Indoors", RoomTag::Indoors }, { "Windows", RoomTag::Windows },
@@ -63,7 +55,7 @@ const std::map<std::string, RoomTag> Room::tag_map_ = { {"Explored", RoomTag::Ex
     { "UnfinishedNorthwest", RoomTag::UnfinishedNorthwest }, { "UnfinishedUp", RoomTag::UnfinishedUp }, { "UnfinishedDown", RoomTag::UnfinishedDown } };
 
 // Lookup table for unfinished exit links.
-const std::vector<RoomTag> Room::unfinished_directions_ = { RoomTag::UnfinishedNorth, RoomTag::UnfinishedNortheast, RoomTag::UnfinishedEast,
+const RoomTag Room::unfinished_directions_[10] = { RoomTag::UnfinishedNorth, RoomTag::UnfinishedNortheast, RoomTag::UnfinishedEast,
     RoomTag::UnfinishedSoutheast, RoomTag::UnfinishedSouth, RoomTag::UnfinishedSouthwest, RoomTag::UnfinishedWest, RoomTag::UnfinishedNorthwest,
     RoomTag::UnfinishedUp, RoomTag::UnfinishedDown };
 
@@ -155,13 +147,8 @@ const Vector3 Room::coords() const
 // Gets the string name of a Direction enum.
 const string& Room::direction_name(Direction dir)
 {
-    auto result = direction_names_.find(dir);
-    if (result == direction_names_.end())
-    {
-        core().nonfatal("Unable to parse direction enum.", Core::CORE_ERROR);
-        return direction_names_.find(Direction::NONE)->second;
-    }
-    return result->second;
+    if (dir > Direction::DOWN) throw runtime_error("Invalid direction call from direction_name");
+    return direction_names_[static_cast<int>(dir)];
 }
 
 // Returns the name of the door (door, gate, etc.) on the specified Link, if any.
@@ -199,7 +186,7 @@ const string& Room::id_str() const { return id_str_; }
 bool Room::is_unfinished(Direction dir) const
 {
     if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction call from is_unfinished [" + id_str_ + "]");
-    return tag(unfinished_directions_.at(static_cast<int>(dir) - 1));
+    return tag(unfinished_directions_[static_cast<int>(dir) - 1]);
 }
 
 // Turns a Direction into an int for array access, produces a standard error on invalid input.
@@ -395,13 +382,8 @@ uint32_t Room::region() const
 // Reverses a Direction (e.g. north becomes south).
 Direction Room::reverse_direction(Direction dir)
 {
-    if (dir > Direction::UP)
-    {
-        core().nonfatal("Attempt to reverse invalid direction: " + to_string(static_cast<int>(dir)), Core::CORE_ERROR);
-        return Direction::NONE;
-    }
-    return reverse_direction_map_.find(dir)->second;
-    
+    if (dir > Direction::DOWN) throw runtime_error("Invalid direction call from reverse_direction");
+    return reverse_direction_map_[static_cast<int>(dir)];
 }
 
 // Saves only the changes to this Room in a save file. Should only be called by a parent Region.

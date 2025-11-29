@@ -10,7 +10,6 @@
 #include <list>
 #include <map>
 #include <set>
-#include <vector>
 
 #include "trailmix/math/vector3.hpp"
 #include "world/area/link.hpp"
@@ -119,10 +118,10 @@ private:
     static constexpr uint32_t   ROOM_DELTA_LINK_UNCHANGED = 101;    // Marks this Link as existing but unchanged.
     static constexpr uint32_t   ROOM_DELTA_LINK_CHANGED =   201;    // Marks this Link as existing and modified.
 
-    static const std::map<Direction, std::string> direction_names_;     // Static map that converts a Direction enum into string names.
-    static const std::map<Direction, Direction> reverse_direction_map_; // Static map that inverts a Direction (e.g. east -> west).
-    static const std::map<std::string, RoomTag> tag_map_;               // Used during loading YAML data, to convert RoomTag text names into RoomTag enums.
-    static const std::vector<RoomTag> unfinished_directions_;           // Lookup table for unfinished exit links.
+    static const std::string    direction_names_[11];       // Lookup table to convert a Direction enum into a string name.
+    static const Direction      reverse_direction_map_[11]; // Lookup table that inverts a Direction (e.g. east -> west).
+    static const std::map<std::string, RoomTag> tag_map_;   // Used during loading YAML data, to convert RoomTag text names into RoomTag enums.
+    static const RoomTag        unfinished_directions_[10]; // Lookup table for unfinished exit links.
 
     // Turns a Direction into an int for array access, produces a standard error on invalid input.
     int link_id(Direction dir, const std::string& caller, bool fail_on_null = true) const;
