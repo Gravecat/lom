@@ -6,7 +6,7 @@
 
 REGION_IDENTIFIER:
   name: The Floating Island of Sula
-  version: 2
+  version: 3
 
 SULA_PLAINS:
   coords: [ 0, 0, 100 ]
@@ -17,7 +17,7 @@ SULA_PLAINS:
     north: SULA_STONE_8
     east: [ SULA_SHACK, Door, Openable ]
   map: "{g}O"
-  short_name: plains
+  name: [ Sula Plains, plains ]
   tags: [ AlwaysSpring ]
 
 SULA_SHACK:
@@ -28,7 +28,7 @@ SULA_SHACK:
   exits:
     west: [ SULA_PLAINS, Door, Openable ]
   map: "O"
-  short_name: shack
+  name: [ Wooden Shack, shack ]
   tags: [ Indoors ]
 
 SULA_STONE_1:
@@ -40,7 +40,7 @@ SULA_STONE_1:
     south: SULA_STONE_4
     east: SULA_STONE_2
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]
 
 SULA_STONE_2:
   coords: [ 0, -3, 100 ]
@@ -52,7 +52,7 @@ SULA_STONE_2:
     southeast: SULA_STONE_6
     west: SULA_STONE_1
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]
 
 SULA_STONE_3:
   coords: [ 1, -3, 100 ]
@@ -62,7 +62,7 @@ SULA_STONE_3:
   exits:
     south: SULA_STONE_6
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]
 
 SULA_STONE_4:
   coords: [ -1, -2, 100 ]
@@ -74,7 +74,7 @@ SULA_STONE_4:
     south: SULA_STONE_7
     southeast: SULA_STONE_8
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]
 
 SULA_STONE_5:
   coords: [ 0, -2, 100 ]
@@ -86,7 +86,7 @@ SULA_STONE_5:
     south: SULA_STONE_8
     southwest: SULA_STONE_7
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]
 
 SULA_STONE_6:
   coords: [ 1, -2, 100 ]
@@ -98,7 +98,7 @@ SULA_STONE_6:
     northwest: SULA_STONE_2
     south: SULA_STONE_9
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]
 
 SULA_STONE_7:
   coords: [ -1, -1, 100 ]
@@ -109,7 +109,7 @@ SULA_STONE_7:
     north: SULA_STONE_4
     northeast: SULA_STONE_5
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]
 
 SULA_STONE_8:
   coords: [ 0, -1, 100 ]
@@ -121,7 +121,7 @@ SULA_STONE_8:
     northwest: SULA_STONE_4
     south: SULA_PLAINS
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]
 
 SULA_STONE_9:
   coords: [ 1, -1, 100 ]
@@ -131,4 +131,4 @@ SULA_STONE_9:
   exits:
     north: SULA_STONE_6
   map: "{W}O"
-  short_name: paved stone
+  name: [ Paved Stones, paved stone ]

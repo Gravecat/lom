@@ -167,8 +167,11 @@ void Region::load_from_gamedata(const string& filename, bool update_world)
         const string error_str = filename + " [" + key + "]: ";
         auto room_ptr = std::make_unique<Room>(key);
 
-        if (!room_yaml.key_exists("short_name")) throw runtime_error(error_str + "Missing short_name data.");
-        room_ptr->set_short_name(room_yaml.val("short_name"), false);
+        if (!room_yaml.key_exists("name")) throw runtime_error(error_str + "Missing name data.");
+        if (!room_yaml.get_child("name").is_seq()) throw runtime_error(error_str + "Room name not correctly set (expected sequence).");
+        const vector<string> name_vec = room_yaml.get_seq("name");
+        if (name_vec.size() != 2) FileReader::standard_error("Name data sequence length incorrect", 2, name_vec.size(), {key});
+        room_ptr->set_name(name_vec[0], name_vec[1]);
 
         if (!room_yaml.key_exists("desc")) throw runtime_error(error_str + "Missing room description.");
         room_ptr->set_desc(strip_trailing_newlines(room_yaml.val("desc")), false);

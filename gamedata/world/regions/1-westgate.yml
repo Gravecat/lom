@@ -6,7 +6,7 @@
 
 REGION_IDENTIFIER:
   name: The Forge-City of Westgate
-  version: 2
+  version: 3
 
 ARROW_PARK:
   coords: [ 0, 0, 0 ]
@@ -17,7 +17,7 @@ ARROW_PARK:
   exits:
     south: ARROW_PARK_S
   map: "{g}O"
-  short_name: park
+  name: [ Arrow Park, park ]
   tags: [ Trees, UnfinishedNorth, UnfinishedEast, UnfinishedWest ]
 
 ARROW_PARK_S:
@@ -30,7 +30,7 @@ ARROW_PARK_S:
     down: ARROW_TRENCH
     north: ARROW_PARK
   map: "{g}v"
-  short_name: park
+  name: [ Arrow Park, park ]
   tags: [ Trees ]
 
 ARROW_TRENCH:
@@ -40,11 +40,24 @@ ARROW_TRENCH:
     vanished into darkness. The ceiling ends and one can probably climb up the sloped sides to the forest floor, dark evergreens towering well above you. Barely
     visible in the gloom, a heavy metal gate leads southwest.
   exits:
+    east: ARROW_TRENCH_COLLAPSED
     southwest: [ WHITE_STAR_ENTRYWAY, Gate, Openable, Permalock, SeeThrough ]
     up: ARROW_PARK_S
   map: "^"
+  name: [ Rough Stone Trench, trench]
   short_name: trench
-  tags: [ Underground, UnfinishedEast ]
+  tags: [ Underground ]
+
+ARROW_TRENCH_COLLAPSED:
+  coords: [ 1, 1, -1 ]
+  desc: >
+    The rough stone trench comes to a rather abrupt end here, its sloping walls still reaching to the tall stone ceiling, but the passage east is completely
+    blocked by a cave-in, huge chunks of rubble packed together with dirt completely sealing off anything that may have existed to the east.
+  exits:
+    west: ARROW_TRENCH
+  map: O
+  name: [ Collapsed Stone Trench, trench ]
+  tags: [ Underground ]
 
 WHITE_STAR_ENTRYWAY:
   coords: [ -1, 2, -1 ]
@@ -53,5 +66,5 @@ WHITE_STAR_ENTRYWAY:
   exits:
     northeast: [ ARROW_TRENCH, Gate, Openable, Permalock, SeeThrough ]
   map: "v"
-  short_name: tbc
+  name: [ tbc, tbc ]
   tags: [ Underground, UnfinishedDown ]
