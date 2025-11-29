@@ -21,6 +21,7 @@
 
 using std::make_unique;
 using std::runtime_error;
+using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::vector;
@@ -92,6 +93,18 @@ void World::create_region_saves(int save_slot)
     }
 }
 
+#ifdef WESTGATE_BUILD_DEBUG
+// When in debug mode, mark room coordinates and name hashes as used, to track overlaps.
+void World::debug_mark_room(const string& room_name, Vector3 coords)
+{
+    const uint32_t room_name_hash = murmur3(room_name);
+    if (room_coords_used_.count(coords) > 0) throw runtime_error("Room coordinate collision detected: " + coords.string() + " [" + room_name + "]");
+    if (room_name_hashes_used_.count(room_name_hash) > 0) throw runtime_error("Room name hash collision detected: " + room_name);
+    room_coords_used_.insert(coords);
+    room_name_hashes_used_.insert(room_name_hash);
+}
+#endif
+
 // Attempts to find a room by its string ID.
 Room* World::find_room(const std::string& id, uint32_t region_id)
 { return find_room(murmur3(id), region_id); }
@@ -132,16 +145,6 @@ Region* World::load_region(uint32_t id)
     regions_.insert({id, std::move(new_region)});
     return region_ptr;
 }
-
-#ifdef WESTGATE_BUILD_DEBUG
-// When in debug mode, mark room coordinates as used, to track overlaps.
-void World::mark_room_coords_used(Vector3 coords)
-{
-    core().log(coords.string());
-    if (room_coords_used_.count(coords) > 0) throw std::runtime_error("Room coordinate collision detected: " + coords.string());
-    room_coords_used_.insert(coords);
-}
-#endif
 
 // Returns a reference to the procedural name generator object.
 ProcNameGen& World::namegen() const

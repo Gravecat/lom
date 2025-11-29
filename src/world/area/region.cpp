@@ -189,8 +189,8 @@ void Region::load_from_gamedata(const string& filename, bool update_world)
         }
         Vector3 room_coords = Vector3(coord_int_vec.at(0), coord_int_vec.at(1), coord_int_vec.at(2));
 #ifdef WESTGATE_BUILD_DEBUG
-        // In debug mode, if we're doing the initial new-game saved-data creation, check for room coordinate collisions.
-        if (!update_world) world().mark_room_coords_used(room_coords);
+        // In debug mode, if we're doing the initial new-game saved-data creation, check for room coordinate and name hash collisions.
+        if (!update_world) world().debug_mark_room(key, room_coords);
 #endif
         room_ptr->set_coords(room_coords);
 
