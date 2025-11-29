@@ -8,14 +8,14 @@
 #include <map>
 #include <unordered_map>
 
+#include "actions/cheats.hpp"
+#include "actions/meta.hpp"
+#include "actions/silly.hpp"
+#include "actions/world-interaction.hpp"
 #include "core/core.hpp"
 #include "core/terminal.hpp"
-#include "parser/cheats.hpp"
-#include "parser/meta.hpp"
 #include "parser/parser.hpp"
 #include "parser/parser-macros.hpp"
-#include "parser/silly.hpp"
-#include "parser/world-interaction.hpp"
 #include "trailmix/text/hash.hpp"
 #include "trailmix/text/manipulation.hpp"
 #include "world/area/room.hpp"
@@ -43,45 +43,45 @@ static const std::map<uint32_t, Direction> parser_directions = {
 };
 
 static const std::unordered_map<uint32_t, std::function<void(vector<uint32_t>&, vector<string>&)>> parser_verbs = {
-    { 2252282012, parser::cheats::hash },   // #hash
-    { 3069208872, parser::meta::automap },  // automap
-    { 2746646486, parser::world_interaction::open_close },  // close
-    { 2573673949, parser::world_interaction::travel },  // d
-    { 715181085, parser::world_interaction::travel },   // down
-    { 4163295959, parser::world_interaction::travel },  // e
-    { 717260451, parser::world_interaction::travel },   // east
-    { 3693685262, parser::silly::magic_word },  // frotz
-    { 93100650, parser::world_interaction::travel },    // go
-    { 1214476199, parser::world_interaction::look },    // l
-    { 365823675, parser::world_interaction::look }, // look
-    { 3654652163, parser::meta::automap },  // map
-    { 516519904, parser::meta::automap },   // minimap
-    { 1337450370, parser::world_interaction::travel },  // move
-    { 4254119393, parser::world_interaction::travel },  // n
-    { 3641754167, parser::world_interaction::travel },  // ne
-    { 1081869984, parser::world_interaction::travel },  // north
-    { 1897786808, parser::world_interaction::travel },  // northeast
-    { 320024672, parser:: world_interaction::travel },  // northwest
-    { 4257653048, parser::world_interaction::travel },  // nw
-    { 21229531, parser::world_interaction::open_close}, // open
-    { 1253391317, parser::silly::magic_word },  // plugh
-    { 1533866676, parser::silly::magic_word },  // plover
-    { 3289483580, parser::meta::quit }, // quit
-    { 3627942915, parser::world_interaction::travel },  // s
-    { 1633956953, parser::meta::save }, // save
-    { 3801532777, parser::world_interaction::travel },  // se
-    { 819466240, parser::world_interaction::travel },   // south
-    { 1457891302, parser::world_interaction::travel },  // southeast
-    { 2626121188, parser::world_interaction::travel },  // southwest
-    { 656258893, parser::world_interaction::travel },   // sw
-    { 1908976648, parser::world_interaction::travel },  // travel
-    { 2399778729, parser::world_interaction::travel },  // u
-    { 367575389, parser::world_interaction::travel },   // up
-    { 3359274028, parser::world_interaction::travel },  // w
-    { 51785697, parser::world_interaction::wait },  // wait
-    { 3976103327, parser::world_interaction::travel },  // west
-    { 42193550, parser::silly::magic_word },    // xyzzy
-    { 1601889381, parser::world_interaction::wait } // z
+    { 2252282012, actions::cheats::hash },                  // #hash
+    { 3069208872, actions::meta::automap },                 // automap
+    { 2746646486, actions::world_interaction::open_close }, // close
+    { 2573673949, actions::world_interaction::travel },     // d
+    { 715181085, actions::world_interaction::travel },      // down
+    { 4163295959, actions::world_interaction::travel },     // e
+    { 717260451, actions::world_interaction::travel },      // east
+    { 3693685262, actions::silly::magic_word },             // frotz
+    { 93100650, actions::world_interaction::travel },       // go
+    { 1214476199, actions::world_interaction::look },       // l
+    { 365823675, actions::world_interaction::look },        // look
+    { 3654652163, actions::meta::automap },                 // map
+    { 516519904, actions::meta::automap },                  // minimap
+    { 1337450370, actions::world_interaction::travel },     // move
+    { 4254119393, actions::world_interaction::travel },     // n
+    { 3641754167, actions::world_interaction::travel },     // ne
+    { 1081869984, actions::world_interaction::travel },     // north
+    { 1897786808, actions::world_interaction::travel },     // northeast
+    { 320024672, actions:: world_interaction::travel },     // northwest
+    { 4257653048, actions::world_interaction::travel },     // nw
+    { 21229531, actions::world_interaction::open_close},    // open
+    { 1253391317, actions::silly::magic_word },             // plugh
+    { 1533866676, actions::silly::magic_word },             // plover
+    { 3289483580, actions::meta::quit },                    // quit
+    { 3627942915, actions::world_interaction::travel },     // s
+    { 1633956953, actions::meta::save },                    // save
+    { 3801532777, actions::world_interaction::travel },     // se
+    { 819466240, actions::world_interaction::travel },      // south
+    { 1457891302, actions::world_interaction::travel },     // southeast
+    { 2626121188, actions::world_interaction::travel },     // southwest
+    { 656258893, actions::world_interaction::travel },      // sw
+    { 1908976648, actions::world_interaction::travel },     // travel
+    { 2399778729, actions::world_interaction::travel },     // u
+    { 367575389, actions::world_interaction::travel },      // up
+    { 3359274028, actions::world_interaction::travel },     // w
+    { 51785697, actions::world_interaction::wait },         // wait
+    { 3976103327, actions::world_interaction::travel },     // west
+    { 42193550, actions::silly::magic_word },               // xyzzy
+    { 1601889381, actions::world_interaction::wait }        // z
 };
 
 // Parses a hashed string into a Direction enum.

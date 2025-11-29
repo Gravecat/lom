@@ -1,16 +1,16 @@
-// parser/cheats.cpp -- Cheating/development/testing commands.
+// actions/cheats.cpp -- Cheating/development/testing commands.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "core/terminal.hpp"
-#include "parser/cheats.hpp"
+#include "actions/cheats.hpp"
 
 using std::to_string;
 using westgate::terminal::print;
 
-namespace westgate::parser::cheats {
+namespace westgate::actions::cheats {
 
 // Hashes words into integers.
 void hash(PARSER_FUNCTION)
@@ -23,4 +23,4 @@ void hash(PARSER_FUNCTION)
     print("The hashed version of {C}" + words.at(1) + " {w}is {C}" + to_string(words_hashed.at(1)));
 }
 
-}   // namespace westgate::parser::cheats
+}   // namespace westgate::actions::cheats

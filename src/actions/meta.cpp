@@ -1,19 +1,19 @@
-// parser/meta.cpp -- "Meta" commands, i.e. commands that interact with the game itself, such as saving or quitting the game.
+// actions/meta.cpp -- "Meta" commands, i.e. commands that interact with the game itself, such as saving or quitting the game.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#include "actions/meta.hpp"
 #include "core/core.hpp"
 #include "core/game.hpp"
 #include "core/terminal.hpp"
-#include "parser/meta.hpp"
 #include "parser/parser.hpp"
 #include "world/entity/player.hpp"
 
 using westgate::terminal::print;
 
-namespace westgate::parser::meta {
+namespace westgate::actions::meta {
 
 // Toggles the automap on or off.
 void automap(PARSER_FUNCTION)
@@ -51,4 +51,4 @@ void save(PARSER_FUNCTION)
     game().save(true);
 }
 
-}   // namespace westgate::parser::meta
+}   // namespace westgate::actions::meta

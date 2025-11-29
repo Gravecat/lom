@@ -13,15 +13,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Source files.
 set(WESTGATE_CPPS
+  src/actions/cheats.cpp
+  src/actions/meta.cpp
+  src/actions/silly.cpp
+  src/actions/world-interaction.cpp
   src/core/core.cpp
   src/core/game.cpp
   src/core/terminal.cpp
   src/misc/namegen.cpp
-  src/parser/cheats.cpp
-  src/parser/meta.cpp
   src/parser/parser.cpp
-  src/parser/silly.cpp
-  src/parser/world-interaction.cpp
   src/world/area/automap.cpp
   src/world/area/link.cpp
   src/world/area/region.cpp

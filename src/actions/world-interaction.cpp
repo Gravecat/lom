@@ -1,13 +1,13 @@
-// parser/world-interaction.cpp -- Commands that interact with the world, in ways that aren't specific enough to get their own source files.
+// actions/world-interaction.cpp -- Commands that interact with the world, in ways that aren't specific enough to get their own source files.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+#include "actions/world-interaction.hpp"
 #include "core/core.hpp"
 #include "core/terminal.hpp"
 #include "parser/parser.hpp"
-#include "parser/world-interaction.hpp"
 #include "trailmix/math/vector3.hpp"
 #include "trailmix/text/conversion.hpp"
 #include "world/area/room.hpp"
@@ -21,7 +21,7 @@ using trailmix::math::Vector3;
 using trailmix::text::conversion::number_to_text;
 using westgate::terminal::print;
 
-namespace westgate::parser::world_interaction {
+namespace westgate::actions::world_interaction {
 
 // Look around you. Just look around you.
 void look(PARSER_FUNCTION)
@@ -41,7 +41,7 @@ void open_close(PARSER_FUNCTION)
         print("{Y}Please specify a direction to " + open_close + " something.");
         return;
     }
-    Direction dir = parse_direction(words_hashed.at(1));
+    Direction dir = parser::parse_direction(words_hashed.at(1));
     if (dir == Direction::NONE)
     {
         print("{Y}I don't understand. Please specify a direction to " + open_close + " something.");
@@ -185,4 +185,4 @@ void wait(PARSER_FUNCTION)
     world().time_weather().pass_time(amount, true);
 }
 
-}   // westgate::parser::world_interaction namespace
+}   // westgate::actions::world_interaction namespace

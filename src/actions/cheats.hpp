@@ -1,4 +1,4 @@
-// parser/cheats.hpp -- Cheating/development/testing commands.
+// actions/cheats.hpp -- Cheating/development/testing commands.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
@@ -7,11 +7,10 @@
 #pragma once
 #include "core/pch.hpp" // Precompiled header
 
-#include "parser/parser.hpp"
 #include "parser/parser-macros.hpp"
 
-namespace westgate::parser::cheats {
+namespace westgate::actions::cheats {
 
 void    hash(PARSER_FUNCTION);  // Hashes words into integers.
 
-}   // namespace westgate::parser::cheats
+}   // namespace westgate::actions::cheats

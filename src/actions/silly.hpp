@@ -1,4 +1,4 @@
-// parser/silly.hpp -- Silly commands that serve no real purpose.
+// actions/silly.hpp -- Silly commands that serve no real purpose.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
@@ -7,11 +7,10 @@
 #pragma once
 #include "core/pch.hpp" // Precompiled header
 
-#include "parser/parser.hpp"
 #include "parser/parser-macros.hpp"
 
-namespace westgate::parser::silly {
+namespace westgate::actions::silly {
 
 void    magic_word(PARSER_FUNCTION);    // You are likely to be eaten by a grue.
 
-}   // namespace westgate::parser::silly
+}   // namespace westgate::actions::silly

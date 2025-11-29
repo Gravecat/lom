@@ -1,17 +1,17 @@
-// parser/silly.cpp -- Silly commands that serve no real purpose.
+// actions/silly.cpp -- Silly commands that serve no real purpose.
 
 // SPDX-FileType: SOURCE
 // SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #include "core/terminal.hpp"
-#include "parser/cheats.hpp"
+#include "actions/silly.hpp"
 #include "trailmix/math/random.hpp"
 
 using trailmix::math::rnd;
 using westgate::terminal::print;
 
-namespace westgate::parser::silly {
+namespace westgate::actions::silly {
 
 // You are likely to be eaten by a grue.
 void magic_word(PARSER_FUNCTION)
@@ -21,4 +21,4 @@ void magic_word(PARSER_FUNCTION)
     else print("{K}Nothing happens.");
 }
 
-}   // namespace westgate::parser::silly
+}   // namespace westgate::actions::silly
