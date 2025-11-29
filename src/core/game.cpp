@@ -92,7 +92,7 @@ void Game::load_game(int save_slot)
     // Load the Region that contains the Player object.
     world_ptr_->load_region(current_region);
 
-    print("{Y}Saved game loaded successfully!");
+    print("{c}Saved game loaded successfully!");
 }
 
 // brøether, may i have the lööps
@@ -119,7 +119,7 @@ Player& Game::player() const { return *player_ptr_; }
 // Save the game, if there's a game in progress.
 void Game::save(bool chatty)
 {
-    if (chatty) print("{B}Saving the game...", false);
+    if (chatty) print("{c}Saving the game...", false);
     world_ptr_->save(save_id_);
     save_misc_data();
     if (chatty) print(" Done!");
