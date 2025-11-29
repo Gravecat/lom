@@ -18,6 +18,7 @@ ARROW_PARK:
     south: ARROW_PARK_S
   map: "{g}O"
   short_name: park
+  tags: [ Trees ]
 
 ARROW_PARK_S:
   coords: [ 0, 1, 0 ]
@@ -26,6 +27,18 @@ ARROW_PARK_S:
     here are dense and deep enough that the city seems it might be miles away, forgiving the encroaching plumes of smoke breaching the treetops. A large,
     rusted iron ring in the middle of the brick platform marks a passage into the ground.
   exits:
+    down: ARROW_TRENCH
     north: ARROW_PARK
   map: "{g}v"
   short_name: park
+  tags: [ Trees ]
+
+ARROW_TRENCH:
+  coords: [ 0, 1, -1 ]
+  desc: >
+    tbc
+  exits:
+    up: ARROW_PARK_S
+  map: "^"
+  short_name: trench
+  tags: [ Underground ]
