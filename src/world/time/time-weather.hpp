@@ -22,7 +22,6 @@ namespace westgate {
 class TimeWeather
 {
 public:
-    enum class Indoors : uint8_t { INDOORS, INDOORS_NO_WINDOWS, INDOORS_CITY, OUTSIDE, OUTSIDE_CITY, UNDERGROUND };
     enum class LightDark : uint8_t { LIGHT, DARK, NIGHT };
     enum class LunarPhase : uint8_t { NEW, WAXING_CRESCENT, FIRST_QUARTER, WAXING_GIBBOUS, FULL, WANING_GIBBOUS, THIRD_QUARTER, WANING_CRESCENT };
     enum class Season : uint8_t { AUTO, WINTER, SPRING, SUMMER, AUTUMN };
@@ -35,7 +34,6 @@ public:
     std::string day_name();                 // Returns the name of the current day of the week.
     int         day_of_month();             // Returns the current day of the month.
     std::string day_of_month_string();      // Returns the day of the month in the form of a string like "1st" or "19th".
-    Indoors     indoors();                  // Gets the indoors/outdoors state.
     LightDark   light_dark();               // Checks whether it's light or dark right now.
     void        load_data(trailmix::file::FileReader* file);    // Loads the time/weather data from the specified save file.
     std::string month_name();               // Returns the name of the current month.
@@ -61,7 +59,7 @@ private:
     Weather     fix_weather(Weather weather, Season season);    // Fixes weather for a specified season.
     void        trigger_event(std::string *message_to_append, bool silent); // Triggers a time-change event.
     bool        player_near_trees();                            // Is the player near trees right now?
-    void        replace_tokens(std::string &str, Indoors indoor_state); // Replaces tokens like $LANDSCAPE|STREETS$ in the source message with correct text.
+    void        replace_tokens(std::string &str, bool in_city); // Replaces tokens like $LANDSCAPE|STREETS$ in the source message with correct text.
     std::string weather_desc(Season season, bool trees);        // Returns a weather description for the current time/weather, based on the specified season.
 
     int         day_;       // The current day of the year.

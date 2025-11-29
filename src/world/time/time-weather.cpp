@@ -136,21 +136,6 @@ TimeWeather::Weather TimeWeather::fix_weather(TimeWeather::Weather weather, Time
     return weather;
 }
 
-// Gets the indoors/outdoors state.
-TimeWeather::Indoors TimeWeather::indoors()
-{
-    const Room* room = player().parent_room();
-    if (room->tag(RoomTag::Underground)) return Indoors::UNDERGROUND;
-    if (room->tag(RoomTag::Indoors))
-    {
-        if (room->can_see_outside()) return Indoors::INDOORS;
-        else if (room->tag(RoomTag::City)) return Indoors::INDOORS_CITY;
-        else return Indoors::INDOORS_NO_WINDOWS;
-    }
-    if (room->tag(RoomTag::City)) return Indoors::OUTSIDE_CITY;
-    return Indoors::OUTSIDE;
-}
-
 // Checks whether it's light or dark right now.
 TimeWeather::LightDark TimeWeather::light_dark()
 {
@@ -232,9 +217,7 @@ bool TimeWeather::pass_time(float seconds, bool allow_interrupt)
             //if (World::player()->hp() < player_old_hp) return false;
             //player_old_hp = World::player()->hp();  // Because HP might go *up* in the meantime.
         }
-        Indoors indoor_state = indoors();
-        const bool show_weather_messages = (indoor_state == Indoors::OUTSIDE || indoor_state == Indoors::OUTSIDE_CITY || indoor_state == Indoors::INDOORS ||
-            indoor_state == Indoors::INDOORS_CITY);
+        const bool can_see_outside = player().parent_room()->can_see_outside();
 
         TimeOfDay old_time_of_day = time_of_day(true);
         int old_time = time_;
@@ -252,8 +235,8 @@ bool TimeWeather::pass_time(float seconds, bool allow_interrupt)
         {
             weather_msg = "";
             old_time_of_day = time_of_day(true);
-            trigger_event(&weather_msg, !show_weather_messages);
-            change_happened = show_weather_messages;
+            trigger_event(&weather_msg, !can_see_outside);
+            change_happened = can_see_outside;
         }
 
         if (change_happened) print("{y}" + weather_msg.substr(1));
@@ -275,9 +258,9 @@ bool TimeWeather::player_near_trees()
 { return player().parent_room()->tag(RoomTag::Trees); }
 
 // Replaces tokens like $LANDSCAPE|STREETS$ in the source message with correct text.
-void TimeWeather::replace_tokens(string &str, Indoors indoor_state)
+void TimeWeather::replace_tokens(string &str, bool in_city)
 {
-    if (indoor_state == Indoors::OUTSIDE_CITY || indoor_state == Indoors::INDOORS_CITY)
+    if (in_city)
     {
         find_and_replace(str, "$LAND|CITY$", "city");
         find_and_replace(str, "$LAND|STREET$", "street");
@@ -396,10 +379,11 @@ void TimeWeather::trigger_event(string *message_to_append, bool silent)
     if (silent) return;
 
     // Display an appropriate message for the changing time/weather, if we're outdoors.
-    const Indoors indoor_state = indoors();
-    string time_message = tw_string_map_.at(time_of_day_str(true) + "_" + weather_str(fix_weather(weather_, current_season())) +
-        (indoor_state == Indoors::INDOORS ? "_INDOORS" : ""));
-    replace_tokens(time_message, indoor_state);
+    const Room* player_room = player().parent_room();
+    const bool in_city = player_room->tag(RoomTag::City);
+    const bool indoors = player_room->tag(RoomTag::Indoors) || player_room->tag(RoomTag::Underground);
+    string time_message = tw_string_map_.at(time_of_day_str(true) + "_" + weather_str(fix_weather(weather_, current_season())) + (indoors ? "_INDOORS" : ""));
+    replace_tokens(time_message, in_city);
     if (message_to_append) *message_to_append += " " + time_message;
     else print("{y}" + time_message);
 }
@@ -415,18 +399,18 @@ string TimeWeather::weather_desc()
 // Returns a weather description for the current time/weather, based on the specified season.
 string TimeWeather::weather_desc(TimeWeather::Season season, bool trees)
 {
-    const Indoors indoor_state = indoors();
-    const bool indoor_bool = (indoor_state == Indoors::INDOORS || indoor_state == Indoors::INDOORS_NO_WINDOWS || indoor_state == Indoors::INDOORS_CITY ||
-        indoor_state == Indoors::UNDERGROUND);
+    const Room* player_room = player().parent_room();
+    const bool indoors = player_room->tag(RoomTag::Indoors) || player_room->tag(RoomTag::Underground);
+    const bool in_city = player_room->tag(RoomTag::City);
     const Weather weather = fix_weather(weather_, season);
-    string desc = tw_string_map_.at(season_str(season) + "_" + time_of_day_str(false) + "_" + weather_str(weather)  + (indoor_bool ? "_INDOORS" : ""));
+    string desc = tw_string_map_.at(season_str(season) + "_" + time_of_day_str(false) + "_" + weather_str(weather)  + (indoors ? "_INDOORS" : ""));
     if (trees)
     {
         string tree_time = "DAY";
         if (time_of_day(false) == TimeOfDay::DUSK || time_of_day(false) == TimeOfDay::NIGHT) tree_time = "NIGHT";
         desc += " " + tw_string_map_.at(season_str(season) + "_" + tree_time + "_" + weather_str(weather) + "_TREES");
     }
-    replace_tokens(desc, indoor_state);
+    replace_tokens(desc, in_city);
     return desc;
 }
 
