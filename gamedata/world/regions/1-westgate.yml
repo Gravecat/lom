@@ -1,0 +1,31 @@
+# world/regions/1-westgate.yml -- The Forge-City of Westgate, the namesake of this game.
+
+# SPDX-FileType: SOURCE
+# SPDX-FileCopyrightText: Copyright 2025 Raine Simmons <gc@gravecat.com>
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+REGION_IDENTIFIER:
+  name: The Forge-City of Westgate
+  version: 2
+
+ARROW_PARK:
+  coords: [ 0, 0, 0 ]
+  desc: >
+     The atmosphere is thick and heavy, tall chimney stacks looming ominously in the sky. Here, surrounded by the stone walls, rests a small natural sanctuary.
+     The grass is thick and green underfoot, and tall trees block out a little of the surrounding buildings, leaves rustling softly. Covering almost a quarter
+     of the park is a large pool, edged in natural rock and varying in depth. To the south stand thick pines, hidden behind which is a weathered brick platform.
+  exits:
+    south: ARROW_PARK_S
+  map: "{g}O"
+  short_name: park
+
+ARROW_PARK_S:
+  coords: [ 0, 1, 0 ]
+  desc: >
+    A weathered brick platform is settled firmly within the cluster of evergreens, grass and wildflowers creeping through cracks in the old stone. The trees
+    here are dense and deep enough that the city seems it might be miles away, forgiving the encroaching plumes of smoke breaching the treetops. A large,
+    rusted iron ring in the middle of the brick platform marks a passage into the ground.
+  exits:
+    north: ARROW_PARK
+  map: "{g}v"
+  short_name: park
