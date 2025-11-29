@@ -63,9 +63,9 @@ const std::map<std::string, RoomTag> Room::tag_map_ = { {"Explored", RoomTag::Ex
     { "UnfinishedNorthwest", RoomTag::UnfinishedNorthwest }, { "UnfinishedUp", RoomTag::UnfinishedUp }, { "UnfinishedDown", RoomTag::UnfinishedDown } };
 
 // Lookup table for unfinished exit links.
-const std::vector<RoomTag> Room::unfinished_directions_ = { static_cast<RoomTag>(0), RoomTag::UnfinishedNorth, RoomTag::UnfinishedNortheast,
-    RoomTag::UnfinishedEast, RoomTag::UnfinishedSoutheast, RoomTag::UnfinishedSouth, RoomTag::UnfinishedSouthwest, RoomTag::UnfinishedWest,
-    RoomTag::UnfinishedNorthwest, RoomTag::UnfinishedUp, RoomTag::UnfinishedDown };
+const std::vector<RoomTag> Room::unfinished_directions_ = { RoomTag::UnfinishedNorth, RoomTag::UnfinishedNortheast, RoomTag::UnfinishedEast,
+    RoomTag::UnfinishedSoutheast, RoomTag::UnfinishedSouth, RoomTag::UnfinishedSouthwest, RoomTag::UnfinishedWest, RoomTag::UnfinishedNorthwest,
+    RoomTag::UnfinishedUp, RoomTag::UnfinishedDown };
 
 // Creates a blank Room with default values and no ID.
 Room::Room() : coords_{0,0,-10000}, desc_("Missing room description."), links_{}, id_(0), map_char_("{M}?"), short_name_("undefined") { }
@@ -199,7 +199,7 @@ const string& Room::id_str() const { return id_str_; }
 bool Room::is_unfinished(Direction dir) const
 {
     if (dir == Direction::NONE || dir > Direction::DOWN) throw runtime_error("Invalid direction call from is_unfinished [" + id_str_ + "]");
-    return tag(unfinished_directions_.at(static_cast<int>(dir)));
+    return tag(unfinished_directions_.at(static_cast<int>(dir) - 1));
 }
 
 // Turns a Direction into an int for array access, produces a standard error on invalid input.
