@@ -78,7 +78,7 @@ void Room::add_entity(unique_ptr<Entity> entity)
 // Checks if we can see the outside world from here.
 bool Room::can_see_outside() const
 {
-    if (!tag(RoomTag::Indoors)) return true;
+    if (!tag(RoomTag::Indoors) && !tag(RoomTag::Underground)) return true;
     if (tag(RoomTag::Windows)) return true;
 
     for (auto &link : links_)
