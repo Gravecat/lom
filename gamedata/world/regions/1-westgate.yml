@@ -40,21 +40,34 @@ ARROW_TRENCH:
     vanished into darkness. The ceiling ends and one can probably climb up the sloped sides to the forest floor, dark evergreens towering well above you. Barely
     visible in the gloom, a heavy metal gate leads southwest.
   exits:
-    east: ARROW_TRENCH_COLLAPSED
+    east: ARROW_TRENCH_CENTRAL
     southwest: [ WHITE_STAR_ENTRYWAY, Gate, Openable, Permalock, SeeThrough ]
     up: ARROW_PARK_S
-  map: "^"
+  map: ^
   name: [ Rough Stone Trench, trench]
   short_name: trench
   tags: [ Underground ]
 
+ARROW_TRENCH_CENTRAL:
+  coords: [ 1, 1, -1]
+  desc: >
+    You find yourself at a crossroads of a sort, a rough stone tunnel of chipped yet clean stone, a trench with angled sides leading off into the gloom to both
+    the east and west. To the southeast you see a crude hole has been torn in the slope, leading into what looks like a dry dirt tunnel, while a heavy metal
+    grate mounted in an opening to the north leads into further darkness, along with the distant sound of running water.
+  exits:
+    east: ARROW_TRENCH_COLLAPSED
+    west: ARROW_TRENCH
+  map: O
+  name: [ Rough Stone Trench, trench ]
+  tags: [ Underground, UnfinishedNorth, UnfinishedSoutheast ]
+
 ARROW_TRENCH_COLLAPSED:
-  coords: [ 1, 1, -1 ]
+  coords: [ 2, 1, -1 ]
   desc: >
     The rough stone trench comes to a rather abrupt end here, its sloping walls still reaching to the tall stone ceiling, but the passage east is completely
     blocked by a cave-in, huge chunks of rubble packed together with dirt completely sealing off anything that may have existed to the east.
   exits:
-    west: ARROW_TRENCH
+    west: ARROW_TRENCH_CENTRAL
   map: O
   name: [ Collapsed Stone Trench, trench ]
   tags: [ Underground ]
@@ -65,6 +78,6 @@ WHITE_STAR_ENTRYWAY:
     Not yet implemented.
   exits:
     northeast: [ ARROW_TRENCH, Gate, Openable, Permalock, SeeThrough ]
-  map: "v"
+  map: v
   name: [ tbc, tbc ]
   tags: [ Underground, UnfinishedDown ]
